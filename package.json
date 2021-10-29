@@ -6,7 +6,10 @@
     "test": "test"
   },
   "dependencies": {
-    "@openzeppelin/contracts": "^3.4.0"
+    "@nomiclabs/hardhat-etherscan": "^2.1.7",
+    "@openzeppelin/contracts": "^3.4.0",
+    "colors": "^1.4.0",
+    "dotenv": "^10.0.0"
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.2",
@@ -26,6 +29,7 @@
     "compile": "npx hardhat compile",
     "clean": "npx hardhat clean",
     "start": "npx hardhat run scripts/deployAll.js",
+    "deploy_fantomtest": "npx hardhat run --network fantomtestnet scripts/deployAll.js",
     "lint:sol": "solhint -f table contracts/**/*.sol"
   },
   "repository": {

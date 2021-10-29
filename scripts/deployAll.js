@@ -4,11 +4,14 @@
 // This solidity function was conflicting w js object property name
 
 const { ethers } = require("hardhat");
+const colors = require('colors');
 
 async function main() {
 
-    const [deployer, MockDAO] = await ethers.getSigners();
+    const [deployer] = await ethers.getSigners();
+    var MockDAO = {address :process.env.MOCKDAO};
     console.log('Deploying contracts with the account: ' + deployer.address);
+    console.log('Deploying contracts with the account: ' + MockDAO.address);
 
     // Initial staking index
     const initialIndex = '7675210820';
@@ -58,21 +61,55 @@ async function main() {
     // Initial Bond debt
     const intialBondDebt = '0'
 
+    
+    // exchanger deploy and add liquidity
+
+	var exchangeRouter;
+	var exchangeFactory;
+	var wETH;
+    {
+        const Factory = await ethers.getContractFactory("PancakeswapFactory");
+		exchangeFactory = await Factory.deploy(deployer.address);
+		await exchangeFactory.deployed();
+		console.log(await exchangeFactory.INIT_CODE_PAIR_HASH());
+
+		console.log("exchangeFactory",exchangeFactory.address.yellow)
+		/* ----------- WETH -------------- */
+		//deploy WETH contract for test
+		const WETH = await ethers.getContractFactory("WETH9");
+		wETH = await WETH.deploy();
+		await wETH.deployed();
+
+		console.log("WETH",wETH.address.yellow)
+
+		/* ----------- Router -------------- */
+		//deploy Router contract for test
+		const Router = await ethers.getContractFactory("PancakeswapRouter");
+		exchangeRouter = await Router.deploy(exchangeFactory.address,wETH.address);
+		await exchangeRouter.deployed();
+
+		console.log("exchangeRouter",exchangeRouter.address.yellow)
+    }
+
     // Deploy OHM
     const OHM = await ethers.getContractFactory('OlympusERC20Token');
     const ohm = await OHM.deploy();
+    await ohm.deployed();
 
     // Deploy DAI
     const DAI = await ethers.getContractFactory('DAI');
     const dai = await DAI.deploy( 0 );
+    await dai.deployed();
 
     // Deploy Frax
     const Frax = await ethers.getContractFactory('FRAX');
     const frax = await Frax.deploy( 0 );
-
+    await frax.deployed();
+    
     // Deploy 10,000,000 mock DAI and mock Frax
     await dai.mint( deployer.address, initialMint );
     await frax.mint( deployer.address, initialMint );
+
 
     // Deploy treasury
     //@dev changed function in treaury from 'valueOf' to 'valueOfToken'... solidity function was coflicting w js object property name
@@ -106,8 +143,12 @@ async function main() {
     // Deploy DAI bond
     //@dev changed function call to Treasury of 'valueOf' to 'valueOfToken' in BondDepository due to change in Treausry contract
     const DAIBond = await ethers.getContractFactory('MockOlympusBondDepository');
-    const daiBond = await DAIBond.deploy(ohm.address, dai.address, treasury.address, MockDAO.address, zeroAddress);
-
+    var daiBond;
+    try {
+        daiBond = await DAIBond.deploy(ohm.address, dai.address, treasury.address, MockDAO.address, zeroAddress);
+    }catch(err){
+    console.log("MockDAOERROR")
+    }
     // Deploy Frax bond
     //@dev changed function call to Treasury of 'valueOf' to 'valueOfToken' in BondDepository due to change in Treausry contract
     const FraxBond = await ethers.getContractFactory('MockOlympusBondDepository');
@@ -178,6 +219,64 @@ async function main() {
     await daiBond.deposit('1000000000000000000000', '60000', deployer.address );
     await fraxBond.deposit('1000000000000000000000', '60000', deployer.address );
 
+    console.log(" ohm.balanceOf",String(await ohm.balanceOf(deployer.address)) )
+    console.log(" dai.balanceOf",String(await dai.balanceOf(deployer.address)) )
+    console.log(" frax.balanceOf",String(await frax.balanceOf(deployer.address)) )
+
+    //dai, frax - ohm add liquidity
+    {
+        
+		tx = await ohm.approve(exchangeRouter.address,ethers.utils.parseUnits("100000000",9));
+		await tx.wait();
+        tx = await dai.approve(exchangeRouter.address,ethers.utils.parseUnits("1000000",18));
+		await tx.wait();
+		tx = await frax.approve(exchangeRouter.address,ethers.utils.parseUnits("1000000",18));
+		await tx.wait();
+        //DAI
+        var tx = await exchangeRouter.addLiquidity(
+			ohm.address,
+			dai.address,
+			ethers.utils.parseUnits("100000",9),
+			ethers.utils.parseUnits("800000",18),
+			0,
+			0,
+			deployer.address,
+			"111111111111111111111"
+		);
+		await tx.wait();
+
+        var daiLP = await exchangeFactory.getPair(ohm.address,dai.address);
+
+        //frax
+        var tx = await exchangeRouter.addLiquidity(
+			ohm.address,
+			frax.address,
+			ethers.utils.parseUnits("100000",9),
+			ethers.utils.parseUnits("800000",18),
+			0,
+			0,
+			deployer.address,
+			"111111111111111111111"
+		);
+		await tx.wait();
+        
+        var fraxLP = await exchangeFactory.getPair(ohm.address,dai.address);
+    }
+
+    console.log( "DAI_ADDRESS: ",dai.address);
+    console.log( "OHM_ADDRESS: ",ohm.address);
+    console.log( "STAKING_ADDRESS: ",staking.address);
+    console.log( "STAKING_HELPER_ADDRESS: ",stakingHelper.address);
+    console.log( "SOHM_ADDRESS: ",sOHM.address);
+    console.log( "DISTRIBUTOR_ADDRESS: ",distributor.address);
+    console.log( "BONDINGCALC_ADDRESS: ",olympusBondingCalculator.address);
+    console.log( "TREASURY_ADDRESS: ",treasury.address);
+
+    console.log( "bondAddress: ",daiBond.address);
+    console.log( "reserveAddress: ",daiLP);
+    console.log( "bondAddress: ",fraxBond.address);
+    console.log( "reserveAddress: ",fraxLP);
+
     console.log( "OHM: " + ohm.address );
     console.log( "DAI: " + dai.address );
     console.log( "Frax: " + frax.address );
@@ -185,9 +284,9 @@ async function main() {
     console.log( "Calc: " + olympusBondingCalculator.address );
     console.log( "Staking: " + staking.address );
     console.log( "sOHM: " + sOHM.address );
-    console.log( "Distributor " + distributor.address);
-    console.log( "Staking Wawrmup " + stakingWarmup.address);
-    console.log( "Staking Helper " + stakingHelper.address);
+    console.log( "Distributor: " + distributor.address);
+    console.log( "Staking Wawrmup: " + stakingWarmup.address);
+    console.log( "Staking Helper: " + stakingHelper.address);
     console.log("DAI Bond: " + daiBond.address);
     console.log("Frax Bond: " + fraxBond.address);
 }
