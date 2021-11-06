@@ -623,10 +623,10 @@ contract OlympusBondDepository is Ownable {
 
     /* ======== STATE VARIABLES ======== */
 
-    address public immutable OHM; // token given as payment for bond
+    address public immutable PIP; // token given as payment for bond
     address public immutable principle; // token used to create bond
-    address public immutable treasury; // mints OHM when receives principle
-    address public immutable DAO; // receives profit share from bond
+    address public immutable treasury; // mints PIP when receives principle
+    address public DAO; // receives profit share from bond
 
     bool public immutable isLiquidityBond; // LP and Reserve bonds are treated slightly different
     address public immutable bondCalculator; // calculates value of LP tokens
@@ -660,7 +660,7 @@ contract OlympusBondDepository is Ownable {
 
     // Info for bond holder
     struct Bond {
-        uint payout; // OHM remaining to be paid
+        uint payout; // PIP remaining to be paid
         uint vesting; // Blocks left to vest
         uint lastBlock; // Last interaction
         uint pricePaid; // In DAI, for front end viewing
@@ -681,14 +681,14 @@ contract OlympusBondDepository is Ownable {
     /* ======== INITIALIZATION ======== */
 
     constructor ( 
-        address _OHM,
+        address _PIP,
         address _principle,
         address _treasury, 
         address _DAO, 
         address _bondCalculator
     ) {
-        require( _OHM != address(0) );
-        OHM = _OHM;
+        require( _PIP != address(0) );
+        PIP = _PIP;
         require( _principle != address(0) );
         principle = _principle;
         require( _treasury != address(0) );
@@ -733,8 +733,6 @@ contract OlympusBondDepository is Ownable {
     }
 
 
-
-    
     /* ======== POLICY FUNCTIONS ======== */
 
     enum PARAMETER { VESTING, PAYOUT, FEE, DEBT }
@@ -798,8 +796,14 @@ contract OlympusBondDepository is Ownable {
         }
     }
 
-
-    
+    /**
+     *  @notice set DAO
+     *  @param _DAO address
+     */
+    function setDaoAddress( address _DAO) external onlyPolicy() {
+        require( _DAO != address(0) );
+        DAO = _DAO;
+    }
 
     /* ======== USER FUNCTIONS ======== */
 
@@ -828,7 +832,7 @@ contract OlympusBondDepository is Ownable {
         uint value = ITreasury( treasury ).valueOf( principle, _amount );
         uint payout = payoutFor( value ); // payout to bonder is computed
 
-        require( payout >= 10000000, "Bond too small" ); // must be > 0.01 OHM ( underflow protection )
+        require( payout >= 10000000, "Bond too small" ); // must be > 0.01 PIP ( underflow protection )
         require( payout <= maxPayout(), "Bond too large"); // size protection because there is no slippage
 
         // profits are calculated
@@ -838,14 +842,14 @@ contract OlympusBondDepository is Ownable {
         /**
             principle is transferred in
             approved and
-            deposited into the treasury, returning (_amount - profit) OHM
+            deposited into the treasury, returning (_amount - profit) PIP
          */
         IERC20( principle ).safeTransferFrom( msg.sender, address(this), _amount );
         IERC20( principle ).approve( address( treasury ), _amount );
         ITreasury( treasury ).deposit( _amount, principle, profit );
         
         if ( fee != 0 ) { // fee is transferred to dao 
-            IERC20( OHM ).safeTransfer( DAO, fee ); 
+            IERC20( PIP ).safeTransfer( DAO, fee ); 
         }
         
         // total debt is increased
@@ -912,13 +916,13 @@ contract OlympusBondDepository is Ownable {
      */
     function stakeOrSend( address _recipient, bool _stake, uint _amount ) internal returns ( uint ) {
         if ( !_stake ) { // if user does not want to stake
-            IERC20( OHM ).transfer( _recipient, _amount ); // send payout
+            IERC20( PIP ).transfer( _recipient, _amount ); // send payout
         } else { // if user wants to stake
             if ( useHelper ) { // use if staking warmup is 0
-                IERC20( OHM ).approve( stakingHelper, _amount );
+                IERC20( PIP ).approve( stakingHelper, _amount );
                 IStakingHelper( stakingHelper ).stake( _amount, _recipient );
             } else {
-                IERC20( OHM ).approve( staking, _amount );
+                IERC20( PIP ).approve( staking, _amount );
                 IStaking( staking ).stake( _amount, _recipient );
             }
         }
@@ -966,7 +970,7 @@ contract OlympusBondDepository is Ownable {
      *  @return uint
      */
     function maxPayout() public view returns ( uint ) {
-        return IERC20( OHM ).totalSupply().mul( terms.maxPayout ).div( 100000 );
+        return IERC20( PIP ).totalSupply().mul( terms.maxPayout ).div( 100000 );
     }
 
     /**
@@ -1017,11 +1021,11 @@ contract OlympusBondDepository is Ownable {
 
 
     /**
-     *  @notice calculate current ratio of debt to OHM supply
+     *  @notice calculate current ratio of debt to PIP supply
      *  @return debtRatio_ uint
      */
     function debtRatio() public view returns ( uint debtRatio_ ) {   
-        uint supply = IERC20( OHM ).totalSupply();
+        uint supply = IERC20( PIP ).totalSupply();
         debtRatio_ = FixedPoint.fraction( 
             currentDebt().mul( 1e9 ), 
             supply
@@ -1079,7 +1083,7 @@ contract OlympusBondDepository is Ownable {
     }
 
     /**
-     *  @notice calculate amount of OHM available for claim by depositor
+     *  @notice calculate amount of PIP available for claim by depositor
      *  @param _depositor address
      *  @return pendingPayout_ uint
      */
@@ -1100,11 +1104,11 @@ contract OlympusBondDepository is Ownable {
     /* ======= AUXILLIARY ======= */
 
     /**
-     *  @notice allow anyone to send lost tokens (excluding principle or OHM) to the DAO
+     *  @notice allow anyone to send lost tokens (excluding principle or PIP) to the DAO
      *  @return bool
      */
     function recoverLostToken( address _token ) external returns ( bool ) {
-        require( _token != OHM );
+        require( _token != PIP );
         require( _token != principle );
         IERC20( _token ).safeTransfer( DAO, IERC20( _token ).balanceOf( address(this) ) );
         return true;

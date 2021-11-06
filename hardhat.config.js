@@ -33,23 +33,27 @@ module.exports = {
     },
     ethereum :{
       url: "https://main-light.eth.linkpool.io/",
-      accounts: [process.env.PRIVATEKEY,process.env.PRIVATEKEY]
+      accounts: [process.env.PRIVATEKEY]
     },
     ICICB :{
-      url: "http://3.17.193.52/",
-      accounts: [process.env.PRIVATEKEY,process.env.PRIVATEKEY]
+      url: "https://mainnet-rpc.icicbchain.org",
+      accounts: [process.env.PRIVATEKEY]
+    },
+    ICICBtest :{
+      url: "https://testnet-rpc.icicbchain.org",
+      accounts: [process.env.PRIVATEKEY]
     },
     bsc :{
       url: "https://bsc-dataseed1.ninicoin.io/",
-      accounts: [process.env.PRIVATEKEY,process.env.PRIVATEKEY]
+      accounts: [process.env.PRIVATEKEY]
     },
     matic :{
       url: "https://rpc-mainnet.matic.quiknode.pro",
-      accounts: [process.env.PRIVATEKEY,process.env.PRIVATEKEY]
+      accounts: [process.env.PRIVATEKEY]
     },
     fantom :{
       url: "https://rpc.ftm.tools/",
-      accounts: [process.env.PRIVATEKEY,process.env.PRIVATEKEY]
+      accounts: [process.env.PRIVATEKEY]
     }
   },
   etherscan: {

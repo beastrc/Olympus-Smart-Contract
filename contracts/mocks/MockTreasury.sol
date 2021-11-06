@@ -251,7 +251,7 @@ interface IERC20Mintable {
   function mint(address account_, uint256 ammount_) external;
 }
 
-interface IOHMERC20 {
+interface IPIPERC20 {
   function burnFrom(address account_, uint256 amount_) external;
 }
 
@@ -305,10 +305,10 @@ contract MockOlympusTreasury is Ownable {
     LIQUIDITYMANAGER,
     DEBTOR,
     REWARDMANAGER,
-    SOHM
+    SPIP
   }
 
-  address public immutable OHM;
+  address public immutable PIP;
   uint256 public immutable blocksNeededForQueue;
 
   address[] public reserveTokens; // Push only, beware false-positives.
@@ -350,21 +350,21 @@ contract MockOlympusTreasury is Ownable {
   mapping(address => bool) public isRewardManager;
   mapping(address => uint256) public rewardManagerQueue; // Delays changes to mapping.
 
-  address public sOHM;
-  uint256 public sOHMQueue; // Delays change to sOHM address
+  address public sPIP;
+  uint256 public sPIPQueue; // Delays change to sPIP address
 
   uint256 public totalReserves; // Risk-free value of all assets
   uint256 public totalDebt;
 
   constructor(
-    address _OHM,
+    address _PIP,
     address _DAI,
     address _Frax,
-    //address _OHMDAI,
+    //address _PIPDAI,
     uint256 _blocksNeededForQueue
   ) {
-    require(_OHM != address(0));
-    OHM = _OHM;
+    require(_PIP != address(0));
+    PIP = _PIP;
 
     isReserveToken[_DAI] = true;
     reserveTokens.push(_DAI);
@@ -372,14 +372,14 @@ contract MockOlympusTreasury is Ownable {
     isReserveToken[_Frax] = true;
     reserveTokens.push(_Frax);
 
-    // isLiquidityToken[ _OHMDAI ] = true;
-    // liquidityTokens.push( _OHMDAI );
+    // isLiquidityToken[ _PIPDAI ] = true;
+    // liquidityTokens.push( _PIPDAI );
 
     blocksNeededForQueue = _blocksNeededForQueue;
   }
 
   /**
-        @notice allow approved address to deposit an asset for OHM
+        @notice allow approved address to deposit an asset for PIP
         @param _amount uint
         @param _token address
         @param _profit uint
@@ -401,9 +401,9 @@ contract MockOlympusTreasury is Ownable {
 
     uint256 value = valueOfToken(_token, _amount);
     (_token, _amount);
-    // mint OHM needed and store amount of rewards for distribution
+    // mint PIP needed and store amount of rewards for distribution
     send_ = value.sub(_profit);
-    IERC20Mintable(OHM).mint(msg.sender, send_);
+    IERC20Mintable(PIP).mint(msg.sender, send_);
 
     totalReserves = totalReserves.add(value);
     emit ReservesUpdated(totalReserves);
@@ -412,7 +412,7 @@ contract MockOlympusTreasury is Ownable {
   }
 
   /**
-        @notice allow approved address to burn OHM for reserves
+        @notice allow approved address to burn PIP for reserves
         @param _amount uint
         @param _token address
      */
@@ -421,7 +421,7 @@ contract MockOlympusTreasury is Ownable {
     require(isReserveSpender[msg.sender] == true, "Not approved");
 
     uint256 value = valueOfToken(_token, _amount);
-    IOHMERC20(OHM).burnFrom(msg.sender, value);
+    IPIPERC20(PIP).burnFrom(msg.sender, value);
 
     totalReserves = totalReserves.sub(value);
     emit ReservesUpdated(totalReserves);
@@ -442,7 +442,7 @@ contract MockOlympusTreasury is Ownable {
 
     uint256 value = valueOfToken(_token, _amount);
 
-    uint256 maximumDebt = IERC20(sOHM).balanceOf(msg.sender); // Can only borrow against sOHM held
+    uint256 maximumDebt = IERC20(sPIP).balanceOf(msg.sender); // Can only borrow against sPIP held
     uint256 availableDebt = maximumDebt.sub(debtorBalance[msg.sender]);
     require(value <= availableDebt, "Exceeds debt limit");
 
@@ -479,18 +479,18 @@ contract MockOlympusTreasury is Ownable {
   }
 
   /**
-        @notice allow approved address to repay borrowed reserves with OHM
+        @notice allow approved address to repay borrowed reserves with PIP
         @param _amount uint
      */
-  function repayDebtWithOHM(uint256 _amount) external {
+  function repayDebtWithPIP(uint256 _amount) external {
     require(isDebtor[msg.sender], "Not approved");
 
-    IOHMERC20(OHM).burnFrom(msg.sender, _amount);
+    IPIPERC20(PIP).burnFrom(msg.sender, _amount);
 
     debtorBalance[msg.sender] = debtorBalance[msg.sender].sub(_amount);
     totalDebt = totalDebt.sub(_amount);
 
-    emit RepayDebt(msg.sender, OHM, _amount, _amount);
+    emit RepayDebt(msg.sender, PIP, _amount, _amount);
   }
 
   /**
@@ -524,7 +524,7 @@ contract MockOlympusTreasury is Ownable {
     require(isRewardManager[msg.sender], "Not approved");
     require(_amount <= excessReserves(), "Insufficient reserves");
 
-    IERC20Mintable(OHM).mint(_recipient, _amount);
+    IERC20Mintable(PIP).mint(_recipient, _amount);
 
     emit RewardsMinted(msg.sender, _recipient, _amount);
   }
@@ -534,7 +534,7 @@ contract MockOlympusTreasury is Ownable {
         @return uint
      */
   function excessReserves() public view returns (uint256) {
-    return totalReserves.sub(IERC20(OHM).totalSupply().sub(totalDebt));
+    return totalReserves.sub(IERC20(PIP).totalSupply().sub(totalDebt));
   }
 
   /**
@@ -565,7 +565,7 @@ contract MockOlympusTreasury is Ownable {
   }
 
   /**
-        @notice returns OHM valuation of asset
+        @notice returns PIP valuation of asset
         @param _token address
         @param _amount uint
         @return value_ uint
@@ -576,8 +576,8 @@ contract MockOlympusTreasury is Ownable {
     returns (uint256 value_)
   {
     if (isReserveToken[_token]) {
-      // convert amount to match OHM decimals
-      value_ = _amount.mul(10**IERC20(OHM).decimals()).div(
+      // convert amount to match PIP decimals
+      value_ = _amount.mul(10**IERC20(PIP).decimals()).div(
         10**IERC20(_token).decimals()
       );
     } else if (isLiquidityToken[_token]) {
@@ -633,9 +633,9 @@ contract MockOlympusTreasury is Ownable {
     } else if (_managing == MANAGING.REWARDMANAGER) {
       // 8
       rewardManagerQueue[_address] = block.number.add(blocksNeededForQueue);
-    } else if (_managing == MANAGING.SOHM) {
+    } else if (_managing == MANAGING.SPIP) {
       // 9
-      sOHMQueue = block.number.add(blocksNeededForQueue);
+      sPIPQueue = block.number.add(blocksNeededForQueue);
     } else return false;
 
     emit ChangeQueued(_managing, _address);
@@ -751,10 +751,10 @@ contract MockOlympusTreasury is Ownable {
       }
       result = !isRewardManager[_address];
       isRewardManager[_address] = result;
-    } else if (_managing == MANAGING.SOHM) {
+    } else if (_managing == MANAGING.SPIP) {
       // 9
-      sOHMQueue = 0;
-      sOHM = _address;
+      sPIPQueue = 0;
+      sPIP = _address;
       result = true;
     } else return false;
 
