@@ -18,6 +18,7 @@ packages/subgraph/config/config.json
 tenderly.yaml
 
 # dependencies
+/artifacts
 /node_modules
 /.pnp
 .pnp.js
