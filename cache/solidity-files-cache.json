@@ -1,0 +1,745 @@
+{
+  "_format": "hh-sol-cache-2",
+  "files": {
+    "E:\\2021_11_projects\\Olympus_fork\\projects\\olympus-contracts\\contracts\\mocks\\dexfactory.sol": {
+      "lastModificationDate": 1633787737765,
+      "contentHash": "4a21fed9b532713266a09cadcbc1582e",
+      "sourceName": "contracts/mocks/dexfactory.sol",
+      "solcConfig": {
+        "version": "0.5.16",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "=0.5.16"
+      ],
+      "artifacts": [
+        "IERC20",
+        "IPancakeswapCallee",
+        "IPancakeswapERC20",
+        "IPancakeswapFactory",
+        "IPancakeswapPair",
+        "Math",
+        "PancakeswapERC20",
+        "PancakeswapFactory",
+        "PancakeswapPair",
+        "SafeMath",
+        "UQ112x112"
+      ]
+    },
+    "E:\\2021_11_projects\\Olympus_fork\\projects\\olympus-contracts\\contracts\\mocks\\dexRouter.sol": {
+      "lastModificationDate": 1635497134763,
+      "contentHash": "1b63d7da478f2b82a79a4afca4c17667",
+      "sourceName": "contracts/mocks/dexRouter.sol",
+      "solcConfig": {
+        "version": "0.6.12",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.6.12"
+      ],
+      "artifacts": [
+        "IERC20",
+        "IPancakeswapFactory",
+        "IPancakeswapPair",
+        "IPancakeswapRouter",
+        "IWETH",
+        "PancakeswapLibrary",
+        "PancakeswapRouter",
+        "SafeMath",
+        "TransferHelper"
+      ]
+    },
+    "E:\\2021_11_projects\\Olympus_fork\\projects\\olympus-contracts\\contracts\\mocks\\weth.sol": {
+      "lastModificationDate": 1633709398155,
+      "contentHash": "a9812e060fa785cfcc1e6ea3e01f1acf",
+      "sourceName": "contracts/mocks/weth.sol",
+      "solcConfig": {
+        "version": "0.6.12",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.6.12"
+      ],
+      "artifacts": [
+        "WETH9"
+      ]
+    },
+    "E:\\2021_11_projects\\Olympus_fork\\projects\\olympus-contracts\\contracts\\BondDepository.sol": {
+      "lastModificationDate": 1636182404248,
+      "contentHash": "a1c31439b43fb71a1d2cdb94d6a85fb6",
+      "sourceName": "contracts/BondDepository.sol",
+      "solcConfig": {
+        "version": "0.7.5",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "0.7.5"
+      ],
+      "artifacts": [
+        "Address",
+        "Counters",
+        "ERC20",
+        "ERC20Permit",
+        "FixedPoint",
+        "FullMath",
+        "IBondCalculator",
+        "IERC20",
+        "IERC2612Permit",
+        "IOwnable",
+        "IStaking",
+        "IStakingHelper",
+        "ITreasury",
+        "OlympusBondDepository",
+        "Ownable",
+        "SafeERC20",
+        "SafeMath"
+      ]
+    },
+    "E:\\2021_11_projects\\Olympus_fork\\projects\\olympus-contracts\\contracts\\mocks\\DAI.sol": {
+      "lastModificationDate": 1635403286555,
+      "contentHash": "635d019dd2efe9d6f2460be360bccf11",
+      "sourceName": "contracts/mocks/DAI.sol",
+      "solcConfig": {
+        "version": "0.7.5",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "0.7.5"
+      ],
+      "artifacts": [
+        "DAI",
+        "IDAI",
+        "LibNote"
+      ]
+    },
+    "E:\\2021_11_projects\\Olympus_fork\\projects\\olympus-contracts\\contracts\\mocks\\Frax.sol": {
+      "lastModificationDate": 1635403286555,
+      "contentHash": "451e3c1300a6992f37827a367ed5006a",
+      "sourceName": "contracts/mocks/Frax.sol",
+      "solcConfig": {
+        "version": "0.7.5",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "0.7.5"
+      ],
+      "artifacts": [
+        "FRAX",
+        "IFRAX",
+        "LibNote"
+      ]
+    },
+    "E:\\2021_11_projects\\Olympus_fork\\projects\\olympus-contracts\\contracts\\mocks\\MockBondDepository.sol": {
+      "lastModificationDate": 1635584849087,
+      "contentHash": "ea141f39dee4031556ea9eaacefea4c8",
+      "sourceName": "contracts/mocks/MockBondDepository.sol",
+      "solcConfig": {
+        "version": "0.7.5",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "0.7.5"
+      ],
+      "artifacts": [
+        "Address",
+        "Counters",
+        "ERC20",
+        "ERC20Permit",
+        "FixedPoint",
+        "FullMath",
+        "IBondCalculator",
+        "IERC20",
+        "IERC2612Permit",
+        "IOwnable",
+        "IStaking",
+        "IStakingHelper",
+        "ITreasury",
+        "MockOlympusBondDepository",
+        "Ownable",
+        "SafeERC20",
+        "SafeMath"
+      ]
+    },
+    "E:\\2021_11_projects\\Olympus_fork\\projects\\olympus-contracts\\contracts\\mocks\\MockTreasury.sol": {
+      "lastModificationDate": 1635584849107,
+      "contentHash": "dd7dac9ada0951effc1fcf2403f5139b",
+      "sourceName": "contracts/mocks/MockTreasury.sol",
+      "solcConfig": {
+        "version": "0.7.5",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "0.7.5"
+      ],
+      "artifacts": [
+        "Address",
+        "IBondCalculator",
+        "IERC20",
+        "IERC20Mintable",
+        "IOwnable",
+        "IPIPERC20",
+        "MockOlympusTreasury",
+        "Ownable",
+        "SafeERC20",
+        "SafeMath"
+      ]
+    },
+    "E:\\2021_11_projects\\Olympus_fork\\projects\\olympus-contracts\\contracts\\OlympusERC20.sol": {
+      "lastModificationDate": 1636182845050,
+      "contentHash": "d39dfb2e5670e3c97c1e72781a1f0bd5",
+      "sourceName": "contracts/OlympusERC20.sol",
+      "solcConfig": {
+        "version": "0.7.5",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "0.7.5"
+      ],
+      "artifacts": [
+        "Counters",
+        "ERC20",
+        "ERC20Permit",
+        "EnumerableSet",
+        "IERC20",
+        "IERC2612Permit",
+        "IOwnable",
+        "OlympusERC20Token",
+        "Ownable",
+        "SafeMath",
+        "VaultOwned"
+      ]
+    },
+    "E:\\2021_11_projects\\Olympus_fork\\projects\\olympus-contracts\\contracts\\RedeemHelper.sol": {
+      "lastModificationDate": 1635403286536,
+      "contentHash": "d2f944a9f589893b5a38f6b35b39cc4b",
+      "sourceName": "contracts/RedeemHelper.sol",
+      "solcConfig": {
+        "version": "0.7.5",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "0.7.5"
+      ],
+      "artifacts": [
+        "IBond",
+        "IOwnable",
+        "Ownable",
+        "RedeemHelper"
+      ]
+    },
+    "E:\\2021_11_projects\\Olympus_fork\\projects\\olympus-contracts\\contracts\\sOlympusERC20.sol": {
+      "lastModificationDate": 1635584849106,
+      "contentHash": "71a5d956f9d01d4855cd685f13ee1744",
+      "sourceName": "contracts/sOlympusERC20.sol",
+      "solcConfig": {
+        "version": "0.7.5",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "0.7.5"
+      ],
+      "artifacts": [
+        "Address",
+        "Counters",
+        "ERC20",
+        "ERC20Permit",
+        "IERC20",
+        "IERC2612Permit",
+        "IOwnable",
+        "Ownable",
+        "SafeMath",
+        "sOlympus"
+      ]
+    },
+    "E:\\2021_11_projects\\Olympus_fork\\projects\\olympus-contracts\\contracts\\Staking.sol": {
+      "lastModificationDate": 1635584954300,
+      "contentHash": "e31807f6af029a13c876ea5da4518d3c",
+      "sourceName": "contracts/Staking.sol",
+      "solcConfig": {
+        "version": "0.7.5",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "0.7.5"
+      ],
+      "artifacts": [
+        "Address",
+        "IDistributor",
+        "IERC20",
+        "IOwnable",
+        "IWarmup",
+        "IsPIP",
+        "OlympusStaking",
+        "Ownable",
+        "SafeERC20",
+        "SafeMath"
+      ]
+    },
+    "E:\\2021_11_projects\\Olympus_fork\\projects\\olympus-contracts\\contracts\\StakingDistributor.sol": {
+      "lastModificationDate": 1635584954299,
+      "contentHash": "e286c5e828cabaa0a319b035fc13cb6a",
+      "sourceName": "contracts/StakingDistributor.sol",
+      "solcConfig": {
+        "version": "0.7.5",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "0.7.5"
+      ],
+      "artifacts": [
+        "Address",
+        "Distributor",
+        "IERC20",
+        "IPolicy",
+        "ITreasury",
+        "Policy",
+        "SafeERC20",
+        "SafeMath"
+      ]
+    },
+    "E:\\2021_11_projects\\Olympus_fork\\projects\\olympus-contracts\\contracts\\StakingHelper.sol": {
+      "lastModificationDate": 1635584849106,
+      "contentHash": "c7573fe7c3ac63cfee8289e75e1cadf5",
+      "sourceName": "contracts/StakingHelper.sol",
+      "solcConfig": {
+        "version": "0.7.5",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "0.7.5"
+      ],
+      "artifacts": [
+        "IERC20",
+        "IStaking",
+        "StakingHelper"
+      ]
+    },
+    "E:\\2021_11_projects\\Olympus_fork\\projects\\olympus-contracts\\contracts\\StakingWarmup.sol": {
+      "lastModificationDate": 1635584849106,
+      "contentHash": "342057292bcecd60feca3d000329e5ec",
+      "sourceName": "contracts/StakingWarmup.sol",
+      "solcConfig": {
+        "version": "0.7.5",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "0.7.5"
+      ],
+      "artifacts": [
+        "IERC20",
+        "StakingWarmup"
+      ]
+    },
+    "E:\\2021_11_projects\\Olympus_fork\\projects\\olympus-contracts\\contracts\\StandardBondingCalculator.sol": {
+      "lastModificationDate": 1635584849087,
+      "contentHash": "f2b95996580e27bd3724c55eee8bc917",
+      "sourceName": "contracts/StandardBondingCalculator.sol",
+      "solcConfig": {
+        "version": "0.7.5",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "0.7.5"
+      ],
+      "artifacts": [
+        "Babylonian",
+        "BitMath",
+        "FixedPoint",
+        "FullMath",
+        "IBondingCalculator",
+        "IERC20",
+        "IUniswapV2ERC20",
+        "IUniswapV2Pair",
+        "OlympusBondingCalculator",
+        "SafeMath"
+      ]
+    },
+    "E:\\2021_11_projects\\Olympus_fork\\projects\\olympus-contracts\\contracts\\Treasury.sol": {
+      "lastModificationDate": 1636176460516,
+      "contentHash": "51113a0eb61457e6e454e74fe245dbee",
+      "sourceName": "contracts/Treasury.sol",
+      "solcConfig": {
+        "version": "0.7.5",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "0.7.5"
+      ],
+      "artifacts": [
+        "Address",
+        "IBondCalculator",
+        "IERC20",
+        "IERC20Mintable",
+        "IOwnable",
+        "IPIPERC20",
+        "OlympusTreasury",
+        "Ownable",
+        "SafeERC20",
+        "SafeMath"
+      ]
+    },
+    "E:\\2021_11_projects\\Olympus_fork\\projects\\olympus-contracts\\contracts\\wOHM.sol": {
+      "lastModificationDate": 1636177796141,
+      "contentHash": "213ee8704df42b2f3891ea03ab8e6201",
+      "sourceName": "contracts/wOHM.sol",
+      "solcConfig": {
+        "version": "0.7.5",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "0.7.5"
+      ],
+      "artifacts": [
+        "Address",
+        "ERC20",
+        "IERC20",
+        "IStaking",
+        "SafeERC20",
+        "SafeMath",
+        "wPIP"
+      ]
+    }
+  }
+}
