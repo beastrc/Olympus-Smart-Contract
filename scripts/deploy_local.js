@@ -209,13 +209,13 @@ async function main() {
 
     {
         // queue and toggle DAI and Frax bond reserve depositor
-        var tx = await treasury.queue('0', daiBond.address,{nonce : nonce++, gasLimit : "100000", gasPrice : "170000000000"});
+        var tx = await treasury.queue('0', daiBond.address,{nonce : nonce++, gasLimit : "100000", gasPrice : "200000000000"});
         await tx.wait();
-        tx = await treasury.queue('0', wFTMBond.address,{nonce : nonce++, gasLimit : "100000", gasPrice : "170000000000"});
+        tx = await treasury.queue('0', wFTMBond.address,{nonce : nonce++, gasLimit : "100000", gasPrice : "200000000000"});
         await tx.wait();
-        tx = await treasury.toggle('0', daiBond.address, zeroAddress,{nonce : nonce++, gasLimit : "100000", gasPrice : "170000000000"});
+        tx = await treasury.toggle('0', daiBond.address, zeroAddress,{nonce : nonce++, gasLimit : "100000", gasPrice : "200000000000"});
         await tx.wait();
-        tx = await treasury.toggle('0', wFTMBond.address, zeroAddress,{nonce : nonce++, gasLimit : "100000", gasPrice : "170000000000"});
+        tx = await treasury.toggle('0', wFTMBond.address, zeroAddress,{nonce : nonce++, gasLimit : "100000", gasPrice : "200000000000"});
         await tx.wait();
 
         console.log("--------------treasury 1----------------")
@@ -226,52 +226,52 @@ async function main() {
         //await tx.wait();
 
         // Set staking for DAI and Frax bond
-        tx = await daiBond.setStaking(staking.address, stakingHelper.address,{nonce : nonce++, gasLimit : "100000", gasPrice : "170000000000"});
+        tx = await daiBond.setStaking(staking.address, stakingHelper.address,{nonce : nonce++, gasLimit : "100000", gasPrice : "200000000000"});
         //await tx.wait();
-        tx = await wFTMBond.setStaking(staking.address, stakingHelper.address,{nonce : nonce++, gasLimit : "100000", gasPrice : "170000000000"});
+        tx = await wFTMBond.setStaking(staking.address, stakingHelper.address,{nonce : nonce++, gasLimit : "100000", gasPrice : "200000000000"});
         //await tx.wait();
 
         // Initialize sPIP and set the index
-        tx = await sPIP.initialize(staking.address,{nonce : nonce++, gasLimit : "100000", gasPrice : "170000000000"});
+        tx = await sPIP.initialize(staking.address,{nonce : nonce++, gasLimit : "100000", gasPrice : "200000000000"});
         //await tx.wait();
-        tx = await sPIP.setIndex(initialIndex,{nonce : nonce++, gasLimit : "100000", gasPrice : "170000000000"});
+        tx = await sPIP.setIndex(initialIndex,{nonce : nonce++, gasLimit : "100000", gasPrice : "200000000000"});
         //await tx.wait();
         
         console.log("-------------- bonds and sPIP ----------------");
 
         // set distributor contract and warmup contract
-        tx = await staking.setContract('0', distributor.address,{nonce : nonce++, gasLimit : "100000", gasPrice : "170000000000"});
+        tx = await staking.setContract('0', distributor.address,{nonce : nonce++, gasLimit : "100000", gasPrice : "200000000000"});
         await tx.wait();
-        tx = await staking.setContract('1', stakingWarmup.address,{nonce : nonce++, gasLimit : "100000", gasPrice : "170000000000"});
+        tx = await staking.setContract('1', stakingWarmup.address,{nonce : nonce++, gasLimit : "100000", gasPrice : "200000000000"});
         await tx.wait();
 
         // Set treasury for PIP token
-        tx = await pip.setVault(treasury.address,{nonce : nonce++, gasLimit : "100000", gasPrice : "170000000000"});
+        tx = await pip.setVault(treasury.address,{nonce : nonce++, gasLimit : "100000", gasPrice : "200000000000"});
         // Add staking contract as distributor recipient
-        tx = await distributor.addRecipient(staking.address, initialRewardRate,{nonce : nonce++, gasLimit : "100000", gasPrice : "170000000000"});
+        tx = await distributor.addRecipient(staking.address, initialRewardRate,{nonce : nonce++, gasLimit : "100000", gasPrice : "200000000000"});
 
         // queue and toggle reward manager
-        tx = await treasury.queue('8', distributor.address,{nonce : nonce++, gasLimit : "100000", gasPrice : "170000000000"});
-        tx = await treasury.toggle('8', distributor.address, zeroAddress,{nonce : nonce++, gasLimit : "100000", gasPrice : "170000000000"});
+        tx = await treasury.queue('8', distributor.address,{nonce : nonce++, gasLimit : "100000", gasPrice : "200000000000"});
+        tx = await treasury.toggle('8', distributor.address, zeroAddress,{nonce : nonce++, gasLimit : "100000", gasPrice : "200000000000"});
 
         // queue and toggle deployer reserve depositor
-        tx = await treasury.queue('0', deployer.address, {nonce : nonce++, gasLimit : "100000", gasPrice : "170000000000"});
-        tx = await treasury.toggle('0', deployer.address, zeroAddress, {nonce : nonce++, gasLimit : "100000", gasPrice : "170000000000"});
+        tx = await treasury.queue('0', deployer.address, {nonce : nonce++, gasLimit : "100000", gasPrice : "200000000000"});
+        tx = await treasury.toggle('0', deployer.address, zeroAddress, {nonce : nonce++, gasLimit : "100000", gasPrice : "200000000000"});
 
         console.log( "final : ",deployer.address);
         // queue and toggle liquidity depositor
-        tx = await treasury.queue('4', deployer.address, {nonce : nonce++, gasLimit : "100000", gasPrice : "170000000000"});
+        tx = await treasury.queue('4', deployer.address, {nonce : nonce++, gasLimit : "100000", gasPrice : "200000000000"});
 
-        tx = await treasury.toggle('4', deployer.address, zeroAddress,{nonce : nonce++, gasLimit : "100000", gasPrice : "170000000000"});
+        tx = await treasury.toggle('4', deployer.address, zeroAddress,{nonce : nonce++, gasLimit : "100000", gasPrice : "200000000000"});
         // Stake PIP through helper
     }
     console.log("-------------- environment ----------------");
 
-    var tx = await dai.approve(treasury.address, largeApproval ,{nonce : nonce++, gasLimit : "100000", gasPrice : "170000000000"});
-    var tx = await pip.approve(stakingHelper.address,'1000000000000000000000000',{nonce : nonce++, gasLimit : "100000", gasPrice : "170000000000"});
+    var tx = await dai.approve(treasury.address, largeApproval ,{nonce : nonce++, gasLimit : "100000", gasPrice : "200000000000"});
+    var tx = await pip.approve(stakingHelper.address,'1000000000000000000000000',{nonce : nonce++, gasLimit : "100000", gasPrice : "200000000000"});
     
     //100,000,000,000,000,000,000
-    tx = await treasury.deposit('100000000000000000000', dai.address, '50000000000',{nonce : nonce++, gasLimit : "200000", gasPrice : "170000000000"});
+    tx = await treasury.deposit('100000000000000000000', dai.address, '50000000000',{nonce : nonce++, gasLimit : "200000", gasPrice : "200000000000"});
 
     console.log(" pip.balanceOf",String(await pip.balanceOf(deployer.address)) )
     console.log(" dai.balanceOf",String(await dai.balanceOf(deployer.address)) )
@@ -293,11 +293,11 @@ async function main() {
             //dai, wFTM - pip add liquidity
         {
             
-            tx = await pip.approve(exchangeRouter.address,ethers.utils.parseUnits("100000000",9),{nonce : nonce++, gasLimit : "100000", gasPrice : "170000000000"});
+            tx = await pip.approve(exchangeRouter.address,ethers.utils.parseUnits("100000000",9),{nonce : nonce++, gasLimit : "100000", gasPrice : "200000000000"});
             
-            tx = await dai.approve(exchangeRouter.address,ethers.utils.parseUnits("1000000",18),{nonce : nonce++, gasLimit : "100000", gasPrice : "170000000000"});
+            tx = await dai.approve(exchangeRouter.address,ethers.utils.parseUnits("1000000",18),{nonce : nonce++, gasLimit : "100000", gasPrice : "200000000000"});
             
-            tx = await wFTM.approve(exchangeRouter.address,ethers.utils.parseUnits("1000000",18),{nonce : nonce++, gasLimit : "100000", gasPrice : "170000000000"});
+            tx = await wFTM.approve(exchangeRouter.address,ethers.utils.parseUnits("1000000",18),{nonce : nonce++, gasLimit : "100000", gasPrice : "200000000000"});
             
             console.log(ethers.utils.formatUnits(await pip.allowance(deployer.address, exchangeRouter.address),9));
             console.log(ethers.utils.formatUnits(await dai.allowance(deployer.address, exchangeRouter.address),18));
@@ -314,7 +314,7 @@ async function main() {
                     0,
                     deployer.address,
                     "111111111111111111111",
-                    {nonce : nonce++, gasLimit : "500000", gasPrice : "170000000000"}
+                    {nonce : nonce++, gasLimit : "500000", gasPrice : "200000000000"}
                 );
             }catch(err){
                 console.log("err",err)
@@ -330,7 +330,7 @@ async function main() {
                 0,
                 deployer.address,
                 "111111111111111111111"
-                ,{nonce : nonce++, gasLimit : "500000", gasPrice : "170000000000"}
+                ,{nonce : nonce++, gasLimit : "500000", gasPrice : "200000000000"}
             );
             await tx.wait();
         }
