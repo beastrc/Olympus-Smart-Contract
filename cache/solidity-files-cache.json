@@ -2,7 +2,7 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "E:\\2021_11_projects\\Olympus_fork\\projects\\olympus-contracts\\contracts\\mocks\\dexfactory.sol": {
-      "lastModificationDate": 1633787737765,
+      "lastModificationDate": 1636293791668,
       "contentHash": "4a21fed9b532713266a09cadcbc1582e",
       "sourceName": "contracts/mocks/dexfactory.sol",
       "solcConfig": {
@@ -336,50 +336,6 @@
         "SafeMath"
       ]
     },
-    "E:\\2021_11_projects\\Olympus_fork\\projects\\olympus-contracts\\contracts\\OlympusERC20.sol": {
-      "lastModificationDate": 1636182845050,
-      "contentHash": "d39dfb2e5670e3c97c1e72781a1f0bd5",
-      "sourceName": "contracts/OlympusERC20.sol",
-      "solcConfig": {
-        "version": "0.7.5",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [],
-      "versionPragmas": [
-        "0.7.5"
-      ],
-      "artifacts": [
-        "Counters",
-        "ERC20",
-        "ERC20Permit",
-        "EnumerableSet",
-        "IERC20",
-        "IERC2612Permit",
-        "IOwnable",
-        "OlympusERC20Token",
-        "Ownable",
-        "SafeMath",
-        "VaultOwned"
-      ]
-    },
     "E:\\2021_11_projects\\Olympus_fork\\projects\\olympus-contracts\\contracts\\RedeemHelper.sol": {
       "lastModificationDate": 1635403286536,
       "contentHash": "d2f944a9f589893b5a38f6b35b39cc4b",
@@ -461,7 +417,7 @@
       ]
     },
     "E:\\2021_11_projects\\Olympus_fork\\projects\\olympus-contracts\\contracts\\Staking.sol": {
-      "lastModificationDate": 1635584954300,
+      "lastModificationDate": 1636279501569,
       "contentHash": "e31807f6af029a13c876ea5da4518d3c",
       "sourceName": "contracts/Staking.sol",
       "solcConfig": {
@@ -504,7 +460,7 @@
       ]
     },
     "E:\\2021_11_projects\\Olympus_fork\\projects\\olympus-contracts\\contracts\\StakingDistributor.sol": {
-      "lastModificationDate": 1635584954299,
+      "lastModificationDate": 1636284125081,
       "contentHash": "e286c5e828cabaa0a319b035fc13cb6a",
       "sourceName": "contracts/StakingDistributor.sol",
       "solcConfig": {
@@ -659,7 +615,7 @@
       ]
     },
     "E:\\2021_11_projects\\Olympus_fork\\projects\\olympus-contracts\\contracts\\Treasury.sol": {
-      "lastModificationDate": 1636176460516,
+      "lastModificationDate": 1636284108322,
       "contentHash": "51113a0eb61457e6e454e74fe245dbee",
       "sourceName": "contracts/Treasury.sol",
       "solcConfig": {
@@ -739,6 +695,50 @@
         "SafeERC20",
         "SafeMath",
         "wPIP"
+      ]
+    },
+    "E:\\2021_11_projects\\Olympus_fork\\projects\\olympus-contracts\\contracts\\OlympusERC20.sol": {
+      "lastModificationDate": 1636285496719,
+      "contentHash": "55bd1c3a7976b48165a949dab04950d4",
+      "sourceName": "contracts/OlympusERC20.sol",
+      "solcConfig": {
+        "version": "0.7.5",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "0.7.5"
+      ],
+      "artifacts": [
+        "Counters",
+        "ERC20",
+        "ERC20Permit",
+        "EnumerableSet",
+        "IERC20",
+        "IERC2612Permit",
+        "IOwnable",
+        "OlympusERC20Token",
+        "Ownable",
+        "SafeMath",
+        "VaultOwned"
       ]
     }
   }

@@ -64,24 +64,63 @@ async function main() {
     const largeApproval = '100000000000000000000000000000000';
 
     // Deploy PIP
+    // const PIP = await ethers.getContractFactory('OlympusERC20Token');
+    // const pip = await PIP.deploy({nonce : nonce++});
+    // await pip.deployed();
+    
+    // const dai = {address : process.env.DAI};
+
+    // const wFTM = {address : process.env.WFTM};
+
+
+    const initialMint = '10000000000000000000000000';
+
+	var exchangeRouter;
+	var exchangeFactory;
+	var wETH;
+    {
+        const Factory = await ethers.getContractFactory("PancakeswapFactory");
+		exchangeFactory = await Factory.deploy(deployer.address);
+		await exchangeFactory.deployed();
+		console.log(await exchangeFactory.INIT_CODE_PAIR_HASH());
+
+		console.log("exchangeFactory",exchangeFactory.address.yellow)
+		/* ----------- WETH -------------- */
+		//deploy WETH contract for test
+		const WETH = await ethers.getContractFactory("WETH9");
+		wETH = await WETH.deploy();
+		await wETH.deployed();
+
+		console.log("WETH",wETH.address.yellow)
+
+		/* ----------- Router -------------- */
+		//deploy Router contract for test
+		const Router = await ethers.getContractFactory("PancakeswapRouter");
+		exchangeRouter = await Router.deploy(exchangeFactory.address,wETH.address);
+		await exchangeRouter.deployed();
+
+		console.log("exchangeRouter",exchangeRouter.address.yellow)
+    }
+
+    // Deploy PIP
     const PIP = await ethers.getContractFactory('OlympusERC20Token');
     const pip = await PIP.deploy();
     await pip.deployed();
 
-    const daiAddress = process.env.DAI;
-    const wFTMAddress = process.env.WFTM;
-    const exchangeRouterAddress = process.env.ROUTER;
-    const exchangeFactoryAddress = process.env.FACTORY;
+    // Deploy DAI
+    const DAI = await ethers.getContractFactory('DAI');
+    const dai = await DAI.deploy( 0 );
+    await dai.deployed();
 
-    const dai = new ethers.Contract(daiAddress, IERC20, deployer);
-    const wFTM = new ethers.Contract(wFTMAddress, IERC20, deployer);
-
-    const exchangeRouter = new ethers.Contract(exchangeRouterAddress, routerAbi, deployer);
-    const exchangeFactory = new ethers.Contract(exchangeFactoryAddress, factoryAbi, deployer)
-
-    var nonce = await provider.getTransactionCount(deployer.address);
-    console.log(nonce);
+    // Deploy Frax
+    const Frax = await ethers.getContractFactory('FRAX');
+    const wFTM = await Frax.deploy( 0 );
+    await wFTM.deployed();
     
+    // Deploy 10,000,000 mock DAI and mock Frax
+    await dai.mint( deployer.address, initialMint );
+    await wFTM.mint( deployer.address, initialMint );
+
     {
             
         tx = await dai.approve(exchangeRouter.address,ethers.utils.parseUnits("1000000",18));
@@ -94,7 +133,28 @@ async function main() {
         var daiLP = await exchangeFactory.getPair(pip.address,dai.address);
         var wFTMLP = await exchangeFactory.getPair(pip.address, wFTM.address);
     }
+
+    /* ----------- test ------------- */
+    ////////////////////////////////////
+    // const pipAddress = "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9";
+    // const daiAddress = "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9";
+    // const wFTMAddress = "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707";
+    // const exchangeRouterAddress = "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0";
+    // const exchangeFactoryAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
+
+    // const pip = new ethers.Contract(pipAddress, PIPContractABI, deployer);
+
+    // const dai = new ethers.Contract(daiAddress, IERC20, deployer);
+    // const wFTM = new ethers.Contract(wFTMAddress, IERC20, deployer);
+
+    // const exchangeRouter = new ethers.Contract(exchangeRouterAddress, routerAbi, deployer);
+    // const exchangeFactory = new ethers.Contract(exchangeFactoryAddress, factoryAbi, deployer)
+
+    /* ----------- test ------------- */
+    ////////////////////////////////////
     
+    var nonce = await provider.getTransactionCount(deployer.address);
+    console.log(nonce);
     var startTIme =  new Date().getTime();
 
     console.log("--------------deploy PIP finish----------------")

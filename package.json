@@ -32,7 +32,9 @@
     "deploy_fantomtest": "npx hardhat run --network fantomtestnet scripts/deployAll.js",
     "deploy": "npx hardhat run --network fantom scripts/deploy.js",
     "deploy_local": "npx hardhat run --network localhost scripts/deploy.js",
+    "deploy_env": "npx hardhat run --network localhost scripts/deploy_env.js",
     "deploy_icicbtest": "npx hardhat run --network ICICBtest scripts/deploy.js",
+    "deploy_ganache": "npx hardhat run --network ganache scripts/deploy.js",
     "lint:sol": "solhint -f table contracts/**/*.sol"
   },
   "repository": {
