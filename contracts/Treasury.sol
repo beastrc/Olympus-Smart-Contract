@@ -192,7 +192,7 @@ interface IERC20Mintable {
   function mint( address account_, uint256 ammount_ ) external;
 }
 
-interface IPIPERC20 {
+interface IOHMERC20 {
     function burnFrom(address account_, uint256 amount_) external;
 }
 
@@ -216,9 +216,9 @@ contract OlympusTreasury is Ownable {
     event ChangeQueued( MANAGING indexed managing, address queued );
     event ChangeActivated( MANAGING indexed managing, address activated, bool result );
 
-    enum MANAGING { RESERVEDEPOSITOR, RESERVESPENDER, RESERVETOKEN, RESERVEMANAGER, LIQUIDITYDEPOSITOR, LIQUIDITYTOKEN, LIQUIDITYMANAGER, DEBTOR, REWARDMANAGER, SPIP }
+    enum MANAGING { RESERVEDEPOSITOR, RESERVESPENDER, RESERVETOKEN, RESERVEMANAGER, LIQUIDITYDEPOSITOR, LIQUIDITYTOKEN, LIQUIDITYMANAGER, DEBTOR, REWARDMANAGER, SOHM }
 
-    address public immutable PIP;
+    address public immutable OHM;
     uint public immutable blocksNeededForQueue;
 
     address[] public reserveTokens; // Push only, beware false-positives.
@@ -260,32 +260,33 @@ contract OlympusTreasury is Ownable {
     mapping( address => bool ) public isRewardManager;
     mapping( address => uint ) public rewardManagerQueue; // Delays changes to mapping.
 
-    address public sPIP;
-    uint public sPIPQueue; // Delays change to sPIP address
+    address public sOHM;
+    uint public sOHMQueue; // Delays change to sOHM address
     
     uint public totalReserves; // Risk-free value of all assets
     uint public totalDebt;
 
     constructor (
-        address _PIP,
+        address _OHM,
         address _DAI,
-        address _WFTM,
+        address _OHMDAI,
         uint _blocksNeededForQueue
     ) {
-        require( _PIP != address(0) );
-        PIP = _PIP;
+        require( _OHM != address(0) );
+        OHM = _OHM;
 
         isReserveToken[ _DAI ] = true;
         reserveTokens.push( _DAI );
 
-        isReserveToken[ _WFTM ] = true;
-        reserveTokens.push( _WFTM );
+        isLiquidityToken[ _OHMDAI ] = true;
+        liquidityTokens.push( _OHMDAI );
+
 
         blocksNeededForQueue = _blocksNeededForQueue;
     }
 
     /**
-        @notice allow approved address to deposit an asset for PIP
+        @notice allow approved address to deposit an asset for OHM
         @param _amount uint
         @param _token address
         @param _profit uint
@@ -302,9 +303,9 @@ contract OlympusTreasury is Ownable {
         }
 
         uint value = valueOf(_token, _amount);
-        // mint PIP needed and store amount of rewards for distribution
+        // mint OHM needed and store amount of rewards for distribution
         send_ = value.sub( _profit );
-        IERC20Mintable( PIP ).mint( msg.sender, send_ );
+        IERC20Mintable( OHM ).mint( msg.sender, send_ );
 
         totalReserves = totalReserves.add( value );
         emit ReservesUpdated( totalReserves );
@@ -313,7 +314,7 @@ contract OlympusTreasury is Ownable {
     }
 
     /**
-        @notice allow approved address to burn PIP for reserves
+        @notice allow approved address to burn OHM for reserves
         @param _amount uint
         @param _token address
      */
@@ -322,7 +323,7 @@ contract OlympusTreasury is Ownable {
         require( isReserveSpender[ msg.sender ] == true, "Not approved" );
 
         uint value = valueOf( _token, _amount );
-        IPIPERC20( PIP ).burnFrom( msg.sender, value );
+        IOHMERC20( OHM ).burnFrom( msg.sender, value );
 
         totalReserves = totalReserves.sub( value );
         emit ReservesUpdated( totalReserves );
@@ -343,7 +344,7 @@ contract OlympusTreasury is Ownable {
 
         uint value = valueOf( _token, _amount );
 
-        uint maximumDebt = IERC20( sPIP ).balanceOf( msg.sender ); // Can only borrow against sPIP held
+        uint maximumDebt = IERC20( sOHM ).balanceOf( msg.sender ); // Can only borrow against sOHM held
         uint availableDebt = maximumDebt.sub( debtorBalance[ msg.sender ] );
         require( value <= availableDebt, "Exceeds debt limit" );
 
@@ -380,18 +381,18 @@ contract OlympusTreasury is Ownable {
     }
 
     /**
-        @notice allow approved address to repay borrowed reserves with PIP
+        @notice allow approved address to repay borrowed reserves with OHM
         @param _amount uint
      */
-    function repayDebtWithPIP( uint _amount ) external {
+    function repayDebtWithOHM( uint _amount ) external {
         require( isDebtor[ msg.sender ], "Not approved" );
 
-        IPIPERC20( PIP ).burnFrom( msg.sender, _amount );
+        IOHMERC20( OHM ).burnFrom( msg.sender, _amount );
 
         debtorBalance[ msg.sender ] = debtorBalance[ msg.sender ].sub( _amount );
         totalDebt = totalDebt.sub( _amount );
 
-        emit RepayDebt( msg.sender, PIP, _amount, _amount );
+        emit RepayDebt( msg.sender, OHM, _amount, _amount );
     }
 
     /**
@@ -424,7 +425,7 @@ contract OlympusTreasury is Ownable {
         require( isRewardManager[ msg.sender ], "Not approved" );
         require( _amount <= excessReserves(), "Insufficient reserves" );
 
-        IERC20Mintable( PIP ).mint( _recipient, _amount );
+        IERC20Mintable( OHM ).mint( _recipient, _amount );
 
         emit RewardsMinted( msg.sender, _recipient, _amount );
     } 
@@ -434,7 +435,7 @@ contract OlympusTreasury is Ownable {
         @return uint
      */
     function excessReserves() public view returns ( uint ) {
-        return totalReserves.sub( IERC20( PIP ).totalSupply().sub( totalDebt ) );
+        return totalReserves.sub( IERC20( OHM ).totalSupply().sub( totalDebt ) );
     }
 
     /**
@@ -459,15 +460,15 @@ contract OlympusTreasury is Ownable {
     }
 
     /**
-        @notice returns PIP valuation of asset
+        @notice returns OHM valuation of asset
         @param _token address
         @param _amount uint
         @return value_ uint
      */
     function valueOf( address _token, uint _amount ) public view returns ( uint value_ ) {
         if ( isReserveToken[ _token ] ) {
-            // convert amount to match PIP decimals
-            value_ = _amount.mul( 10 ** IERC20( PIP ).decimals() ).div( 10 ** IERC20( _token ).decimals() );
+            // convert amount to match OHM decimals
+            value_ = _amount.mul( 10 ** IERC20( OHM ).decimals() ).div( 10 ** IERC20( _token ).decimals() );
         } else if ( isLiquidityToken[ _token ] ) {
             value_ = IBondCalculator( bondCalculator[ _token ] ).valuation( _token, _amount );
         }
@@ -499,8 +500,8 @@ contract OlympusTreasury is Ownable {
             debtorQueue[ _address ] = block.number.add( blocksNeededForQueue );
         } else if ( _managing == MANAGING.REWARDMANAGER ) { // 8
             rewardManagerQueue[ _address ] = block.number.add( blocksNeededForQueue );
-        } else if ( _managing == MANAGING.SPIP ) { // 9
-            sPIPQueue = block.number.add( blocksNeededForQueue );
+        } else if ( _managing == MANAGING.SOHM ) { // 9
+            sOHMQueue = block.number.add( blocksNeededForQueue );
         } else return false;
 
         emit ChangeQueued( _managing, _address );
@@ -610,9 +611,9 @@ contract OlympusTreasury is Ownable {
             result = !isRewardManager[ _address ];
             isRewardManager[ _address ] = result;
 
-        } else if ( _managing == MANAGING.SPIP ) { // 9
-            sPIPQueue = 0;
-            sPIP = _address;
+        } else if ( _managing == MANAGING.SOHM ) { // 9
+            sOHMQueue = 0;
+            sOHM = _address;
             result = true;
 
         } else return false;

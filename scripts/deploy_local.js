@@ -1,8 +1,8 @@
 
-const { ethers ,waffle } = require("hardhat");
+const { ethers, waffle } = require("hardhat");
 const colors = require('colors');
 
-const PIPContractABI = require('../artifacts/contracts/OlympusERC20.sol/OlympusERC20Token.json').abi;
+const OHMContractABI = require('../artifacts/contracts/OlympusERC20.sol/OlympusERC20Token.json').abi;
 const IERC20 = require('../artifacts/contracts/OlympusERC20.sol/IERC20.json').abi;
 const routerAbi = require("../artifacts/contracts/mocks/dexRouter.sol/PancakeswapRouter.json").abi;
 const factoryAbi = require("../artifacts/contracts/mocks/dexfactory.sol/PancakeswapFactory.json").abi;
@@ -13,7 +13,7 @@ async function main() {
 
     const provider = waffle.provider;
 
-    var DAO = {address :process.env.DAO};
+    var DAO = { address: process.env.DAO };
     console.log('Deploying contracts with the account: ' + deployer.address);
     console.log('Deploying contracts with the account: ' + DAO.address);
 
@@ -40,17 +40,17 @@ async function main() {
     // DAI bond BCV
     const daiBondBCV = '365';
 
-    // Frax bond BCV
-    const wFTMBondBCV = '300';
+    // DAILP bond BCV
+    const daiLPBondBCV = '500';
 
     // Bond vesting length in blocks. 33110 ~ 5 days
     const bondVestingLength = '33110';
 
     // Min bond price
-    const minBondPrice = '50';
+    const minBondPrice = '1';
 
     // Max bond payout
-    const maxBondPayout = '50'
+    const maxBondPayout = '10000000000000000000000'
 
     // DAO fee for bond
     const bondFee = '10000';
@@ -63,86 +63,75 @@ async function main() {
 
     const largeApproval = '100000000000000000000000000000000';
 
-    // Deploy PIP
-    // const PIP = await ethers.getContractFactory('OlympusERC20Token');
-    // const pip = await PIP.deploy({nonce : nonce++});
-    // await pip.deployed();
-    
+    // Deploy OHM
+    // const OHM = await ethers.getContractFactory('OlympusERC20Token');
+    // const ohm = await OHM.deploy({nonce : nonce++});
+    // await ohm.deployed();
+
     // const dai = {address : process.env.DAI};
 
     // const wFTM = {address : process.env.WFTM};
 
 
-    const initialMint = '10000000000000000000000000';
+    const initialMint = '10000000000000000000000000000';
 
-	var exchangeRouter;
-	var exchangeFactory;
-	var wETH;
+    var exchangeRouter;
+    var exchangeFactory;
+    var wETH;
     {
         const Factory = await ethers.getContractFactory("PancakeswapFactory");
-		exchangeFactory = await Factory.deploy(deployer.address);
-		await exchangeFactory.deployed();
-		console.log(await exchangeFactory.INIT_CODE_PAIR_HASH());
+        exchangeFactory = await Factory.deploy(deployer.address);
+        await exchangeFactory.deployed();
+        console.log(await exchangeFactory.INIT_CODE_PAIR_HASH());
 
-		console.log("exchangeFactory",exchangeFactory.address.yellow)
-		/* ----------- WETH -------------- */
-		//deploy WETH contract for test
-		const WETH = await ethers.getContractFactory("WETH9");
-		wETH = await WETH.deploy();
-		await wETH.deployed();
+        console.log("exchangeFactory", exchangeFactory.address.yellow)
+        /* ----------- WETH -------------- */
+        //deploy WETH contract for test
+        const WETH = await ethers.getContractFactory("WETH9");
+        wETH = await WETH.deploy();
+        await wETH.deployed();
 
-		console.log("WETH",wETH.address.yellow)
+        console.log("WETH", wETH.address.yellow)
 
-		/* ----------- Router -------------- */
-		//deploy Router contract for test
-		const Router = await ethers.getContractFactory("PancakeswapRouter");
-		exchangeRouter = await Router.deploy(exchangeFactory.address,wETH.address);
-		await exchangeRouter.deployed();
+        /* ----------- Router -------------- */
+        //deploy Router contract for test
+        const Router = await ethers.getContractFactory("PancakeswapRouter");
+        exchangeRouter = await Router.deploy(exchangeFactory.address, wETH.address);
+        await exchangeRouter.deployed();
 
-		console.log("exchangeRouter",exchangeRouter.address.yellow)
+        console.log("exchangeRouter", exchangeRouter.address.yellow)
     }
 
-    // Deploy PIP
-    const PIP = await ethers.getContractFactory('OlympusERC20Token');
-    const pip = await PIP.deploy();
-    await pip.deployed();
+    // Deploy OHM
+    const OHM = await ethers.getContractFactory('OlympusERC20Token');
+    const ohm = await OHM.deploy();
+    await ohm.deployed();
 
     // Deploy DAI
     const DAI = await ethers.getContractFactory('DAI');
-    const dai = await DAI.deploy( 0 );
+    const dai = await DAI.deploy(0);
     await dai.deployed();
 
-    // Deploy Frax
-    const Frax = await ethers.getContractFactory('FRAX');
-    const wFTM = await Frax.deploy( 0 );
-    await wFTM.deployed();
-    
     // Deploy 10,000,000 mock DAI and mock Frax
-    await dai.mint( deployer.address, initialMint );
-    await wFTM.mint( deployer.address, initialMint );
+    await dai.mint(deployer.address, initialMint);
 
     {
-            
-        tx = await dai.approve(exchangeRouter.address,ethers.utils.parseUnits("1000000",18));
-        
-        tx = await wFTM.approve(exchangeRouter.address,ethers.utils.parseUnits("1000000",18));
-        
-        tx = await exchangeFactory.createPair(pip.address,dai.address);
-        tx = await exchangeFactory.createPair(pip.address,wFTM.address);
 
-        var daiLP = await exchangeFactory.getPair(pip.address,dai.address);
-        var wFTMLP = await exchangeFactory.getPair(pip.address, wFTM.address);
+        tx = await dai.approve(exchangeRouter.address, ethers.utils.parseUnits("1000000", 18));
+
+        tx = await exchangeFactory.createPair(ohm.address, dai.address);
+        var daiLP = await exchangeFactory.getPair(ohm.address, dai.address);
     }
 
     /* ----------- test ------------- */
     ////////////////////////////////////
-    // const pipAddress = "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9";
+    // const ohmAddress = "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9";
     // const daiAddress = "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9";
     // const wFTMAddress = "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707";
     // const exchangeRouterAddress = "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0";
     // const exchangeFactoryAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
 
-    // const pip = new ethers.Contract(pipAddress, PIPContractABI, deployer);
+    // const ohm = new ethers.Contract(ohmAddress, OHMContractABI, deployer);
 
     // const dai = new ethers.Contract(daiAddress, IERC20, deployer);
     // const wFTM = new ethers.Contract(wFTMAddress, IERC20, deployer);
@@ -152,215 +141,200 @@ async function main() {
 
     /* ----------- test ------------- */
     ////////////////////////////////////
-    
+
     var nonce = await provider.getTransactionCount(deployer.address);
     console.log(nonce);
-    var startTIme =  new Date().getTime();
+    var startTIme = new Date().getTime();
 
-    console.log("--------------deploy PIP finish----------------")
+    console.log("--------------deploy OHM finish----------------")
     // Deploy treasury
     //@dev changed function in treaury from 'valueOf' to 'valueOfToken'... solidity function was coflicting w js object property name
-    const Treasury = await ethers.getContractFactory('OlympusTreasury'); 
-    const treasury = await Treasury.deploy( pip.address, dai.address, wFTM.address, 0,{nonce : nonce++} );
+    const Treasury = await ethers.getContractFactory('OlympusTreasury');
+    const treasury = await Treasury.deploy(ohm.address, dai.address, daiLP, 0, { nonce: nonce++ });
     //await treasury.deployed();
 
     // Deploy bonding calc
     const OlympusBondingCalculator = await ethers.getContractFactory('OlympusBondingCalculator');
-    const olympusBondingCalculator = await OlympusBondingCalculator.deploy( pip.address ,{nonce : nonce++});
+    const olympusBondingCalculator = await OlympusBondingCalculator.deploy(ohm.address, { nonce: nonce++ });
     //await olympusBondingCalculator.deployed();
 
     // Deploy staking distributor
     const Distributor = await ethers.getContractFactory('Distributor');
-    const distributor = await Distributor.deploy(treasury.address, pip.address, epochLengthInBlocks, firstEpochBlock,{nonce : nonce++});
+    const distributor = await Distributor.deploy(treasury.address, ohm.address, epochLengthInBlocks, firstEpochBlock, { nonce: nonce++ });
     //await distributor.deployed();
-    
-    // Deploy sPIP
-    const SPIP = await ethers.getContractFactory('sOlympus');
-    const sPIP = await SPIP.deploy({nonce : nonce++});
-    //await sPIP.deployed();
-    
+
+    // Deploy sOHM
+    const SOHM = await ethers.getContractFactory('sOlympus');
+    const sOHM = await SOHM.deploy({ nonce: nonce++ });
+    //await sOHM.deployed();
+
     // Deploy Staking
     const Staking = await ethers.getContractFactory('OlympusStaking');
-    const staking = await Staking.deploy( pip.address, sPIP.address, epochLengthInBlocks, firstEpochNumber, firstEpochBlock ,{nonce : nonce++});
+    const staking = await Staking.deploy(ohm.address, sOHM.address, epochLengthInBlocks, firstEpochNumber, firstEpochBlock, { nonce: nonce++ });
     //await staking.deployed();
-    
+
     // Deploy staking warmpup
     const StakingWarmpup = await ethers.getContractFactory('StakingWarmup');
-    const stakingWarmup = await StakingWarmpup.deploy(staking.address, sPIP.address,{nonce : nonce++});
+    const stakingWarmup = await StakingWarmpup.deploy(staking.address, sOHM.address, { nonce: nonce++ });
     //await stakingWarmup.deployed();
-    
+
     // Deploy staking helper
     const StakingHelper = await ethers.getContractFactory('StakingHelper');
-    const stakingHelper = await StakingHelper.deploy(staking.address, pip.address,{nonce : nonce++});
+    const stakingHelper = await StakingHelper.deploy(staking.address, ohm.address, { nonce: nonce++ });
     //await stakingHelper.deployed();
-    
+
     //@dev changed function call to Treasury of 'valueOf' to 'valueOfToken' in BondDepository due to change in Treausry contract
     const DAIBond = await ethers.getContractFactory('OlympusBondDepository');
-    const daiBond = await DAIBond.deploy(pip.address, dai.address, treasury.address, DAO.address, zeroAddress,{nonce : nonce++});
-        
+    const daiBond = await DAIBond.deploy(ohm.address, dai.address, treasury.address, DAO.address, zeroAddress, { nonce: nonce++ });
 
-    // Deploy Frax bond
-    //@dev changed function call to Treasury of 'valueOf' to 'valueOfToken' in BondDepository due to change in Treausry contract
-    const WFTMBond = await ethers.getContractFactory('OlympusBondDepository');
-    const wFTMBond = await WFTMBond.deploy(pip.address, wFTM.address, treasury.address, DAO.address, zeroAddress,{nonce : nonce++});
-    //await wFTMBond.deployed();
-   
+    const daiLpBond = await DAIBond.deploy(ohm.address, daiLP, treasury.address, DAO.address, olympusBondingCalculator.address, { nonce: nonce++ });
+
     console.log("--------------deploy finish----------------")
 
     {
         // queue and toggle DAI and Frax bond reserve depositor
-        var tx = await treasury.queue('0', daiBond.address,{nonce : nonce++, gasLimit : "100000", gasPrice : "200000000000"});
+        var tx = await treasury.queue('0', daiBond.address, { nonce: nonce++, gasLimit: "100000", gasPrice: "200000000000" });
         await tx.wait();
-        tx = await treasury.queue('0', wFTMBond.address,{nonce : nonce++, gasLimit : "100000", gasPrice : "200000000000"});
+        tx = await treasury.toggle('0', daiBond.address, zeroAddress, { nonce: nonce++, gasLimit: "100000", gasPrice: "200000000000" });
         await tx.wait();
-        tx = await treasury.toggle('0', daiBond.address, zeroAddress,{nonce : nonce++, gasLimit : "100000", gasPrice : "200000000000"});
+
+        var tx = await treasury.queue('0', daiLpBond.address, { nonce: nonce++, gasLimit: "100000", gasPrice: "200000000000" });
         await tx.wait();
-        tx = await treasury.toggle('0', wFTMBond.address, zeroAddress,{nonce : nonce++, gasLimit : "100000", gasPrice : "200000000000"});
+        tx = await treasury.toggle('0', daiLpBond.address, zeroAddress, { nonce: nonce++, gasLimit: "100000", gasPrice: "200000000000" });
         await tx.wait();
 
         console.log("--------------treasury 1----------------")
         // Set DAI and Frax bond terms
-        tx = await daiBond.initializeBondTerms(daiBondBCV, bondVestingLength, minBondPrice, maxBondPayout, bondFee, maxBondDebt, intialBondDebt,{nonce : nonce++});
-        //await tx.wait();
-        tx = await wFTMBond.initializeBondTerms(wFTMBondBCV, bondVestingLength, minBondPrice, maxBondPayout, bondFee, maxBondDebt, intialBondDebt,{nonce : nonce++});
-        //await tx.wait();
+        tx = await daiBond.initializeBondTerms(daiBondBCV, bondVestingLength, minBondPrice, maxBondPayout, bondFee, maxBondDebt, intialBondDebt, { nonce: nonce++ });
+        tx = await daiLpBond.initializeBondTerms(daiLPBondBCV, bondVestingLength, minBondPrice, maxBondPayout, bondFee, maxBondDebt, intialBondDebt, { nonce: nonce++ });
+
 
         // Set staking for DAI and Frax bond
-        tx = await daiBond.setStaking(staking.address, stakingHelper.address,{nonce : nonce++, gasLimit : "100000", gasPrice : "200000000000"});
+        tx = await daiBond.setStaking(staking.address, stakingHelper.address, { nonce: nonce++, gasLimit: "100000", gasPrice: "200000000000" });
+        tx = await daiLpBond.setStaking(staking.address, stakingHelper.address, { nonce: nonce++, gasLimit: "100000", gasPrice: "200000000000" });
+
+
+        // Initialize sOHM and set the index
+        tx = await sOHM.initialize(staking.address, { nonce: nonce++, gasLimit: "100000", gasPrice: "200000000000" });
         //await tx.wait();
-        tx = await wFTMBond.setStaking(staking.address, stakingHelper.address,{nonce : nonce++, gasLimit : "100000", gasPrice : "200000000000"});
+        tx = await sOHM.setIndex(initialIndex, { nonce: nonce++, gasLimit: "100000", gasPrice: "200000000000" });
         //await tx.wait();
 
-        // Initialize sPIP and set the index
-        tx = await sPIP.initialize(staking.address,{nonce : nonce++, gasLimit : "100000", gasPrice : "200000000000"});
-        //await tx.wait();
-        tx = await sPIP.setIndex(initialIndex,{nonce : nonce++, gasLimit : "100000", gasPrice : "200000000000"});
-        //await tx.wait();
-        
-        console.log("-------------- bonds and sPIP ----------------");
+        console.log("-------------- bonds and sOHM ----------------");
 
         // set distributor contract and warmup contract
-        tx = await staking.setContract('0', distributor.address,{nonce : nonce++, gasLimit : "100000", gasPrice : "200000000000"});
+        tx = await staking.setContract('0', distributor.address, { nonce: nonce++, gasLimit: "100000", gasPrice: "200000000000" });
         await tx.wait();
-        tx = await staking.setContract('1', stakingWarmup.address,{nonce : nonce++, gasLimit : "100000", gasPrice : "200000000000"});
+        tx = await staking.setContract('1', stakingWarmup.address, { nonce: nonce++, gasLimit: "100000", gasPrice: "200000000000" });
         await tx.wait();
 
-        // Set treasury for PIP token
-        tx = await pip.setVault(treasury.address,{nonce : nonce++, gasLimit : "100000", gasPrice : "200000000000"});
+        // Set treasury for OHM token
+        tx = await ohm.setVault(treasury.address, { nonce: nonce++, gasLimit: "100000", gasPrice: "200000000000" });
         // Add staking contract as distributor recipient
-        tx = await distributor.addRecipient(staking.address, initialRewardRate,{nonce : nonce++, gasLimit : "100000", gasPrice : "200000000000"});
+        tx = await distributor.addRecipient(staking.address, initialRewardRate, { nonce: nonce++, gasLimit: "100000", gasPrice: "200000000000" });
 
         // queue and toggle reward manager
-        tx = await treasury.queue('8', distributor.address,{nonce : nonce++, gasLimit : "100000", gasPrice : "200000000000"});
-        tx = await treasury.toggle('8', distributor.address, zeroAddress,{nonce : nonce++, gasLimit : "100000", gasPrice : "200000000000"});
+        tx = await treasury.queue('8', distributor.address, { nonce: nonce++, gasLimit: "100000", gasPrice: "200000000000" });
+        tx = await treasury.toggle('8', distributor.address, zeroAddress, { nonce: nonce++, gasLimit: "100000", gasPrice: "200000000000" });
 
         // queue and toggle deployer reserve depositor
-        tx = await treasury.queue('0', deployer.address, {nonce : nonce++, gasLimit : "100000", gasPrice : "200000000000"});
-        tx = await treasury.toggle('0', deployer.address, zeroAddress, {nonce : nonce++, gasLimit : "100000", gasPrice : "200000000000"});
+        tx = await treasury.queue('0', deployer.address, { nonce: nonce++, gasLimit: "100000", gasPrice: "200000000000" });
+        tx = await treasury.toggle('0', deployer.address, zeroAddress, { nonce: nonce++, gasLimit: "100000", gasPrice: "200000000000" });
 
-        console.log( "final : ",deployer.address);
+        console.log("final : ", deployer.address);
         // queue and toggle liquidity depositor
-        tx = await treasury.queue('4', deployer.address, {nonce : nonce++, gasLimit : "100000", gasPrice : "200000000000"});
+        tx = await treasury.queue('4', deployer.address, { nonce: nonce++, gasLimit: "100000", gasPrice: "200000000000" });
 
-        tx = await treasury.toggle('4', deployer.address, zeroAddress,{nonce : nonce++, gasLimit : "100000", gasPrice : "200000000000"});
-        // Stake PIP through helper
+        tx = await treasury.toggle('4', deployer.address, zeroAddress, { nonce: nonce++, gasLimit: "100000", gasPrice: "200000000000" });
+        // Stake OHM through helper
     }
     console.log("-------------- environment ----------------");
 
-    var tx = await dai.approve(treasury.address, largeApproval ,{nonce : nonce++, gasLimit : "100000", gasPrice : "200000000000"});
-    var tx = await pip.approve(stakingHelper.address,'1000000000000000000000000',{nonce : nonce++, gasLimit : "100000", gasPrice : "200000000000"});
-    
-    //100,000,000,000,000,000,000
-    tx = await treasury.deposit('100000000000000000000', dai.address, '50000000000',{nonce : nonce++, gasLimit : "200000", gasPrice : "200000000000"});
+    var tx = await dai.approve(treasury.address, largeApproval, { nonce: nonce++, gasLimit: "100000", gasPrice: "200000000000" });
+    var tx = await ohm.approve(stakingHelper.address, '1000000000000000000000000', { nonce: nonce++, gasLimit: "100000", gasPrice: "200000000000" });
+    var tx = await dai.approve(daiBond.address, largeApproval, { nonce: nonce++, gasLimit: "100000", gasPrice: "200000000000" });
 
-    console.log(" pip.balanceOf",String(await pip.balanceOf(deployer.address)) )
-    console.log(" dai.balanceOf",String(await dai.balanceOf(deployer.address)) )
-    console.log(" wFTM.balanceOf",String(await wFTM.balanceOf(deployer.address)) )
-    
-    console.log("debtRatio",ethers.utils.formatUnits(await daiBond.debtRatio()));
-    
-    console.log("bondPriceInUSD",ethers.utils.formatUnits(await daiBond.bondPriceInUSD()));
+    //100,000,000,000,000,000,000
+    tx = await treasury.deposit('100000000000000000000', dai.address, '50000000000', { nonce: nonce++, gasLimit: "200000", gasPrice: "200000000000" });
+
+    console.log(" ohm.balanceOf", String(await ohm.balanceOf(deployer.address)))
+    console.log(" dai.balanceOf", String(await dai.balanceOf(deployer.address)))
+
+    console.log("debtRatio", ethers.utils.formatUnits(await daiBond.debtRatio()));
+
+    console.log("bondPriceInUSD", ethers.utils.formatUnits(await daiBond.bondPriceInUSD()));
+
+
     try {
-        var tx = await stakingHelper.stake('10000000000',{nonce : nonce++});
-        await tx.wait();  
-    }catch(err){
-        console.log("staking error",err);
+        var tx = await stakingHelper.stake('10000000000', { nonce: nonce++ });
+        await tx.wait();
+    } catch (err) {
+        console.log("staking error", err);
     }
-    
-    
+
+    console.log(ethers.utils.formatUnits(await daiBond.payoutFor("10000000000000000000"), 18));
+
+    await daiBond.deposit('10000000000000000000', '60000', deployer.address, { nonce: nonce++ });
+
     console.log("-------------- Exchange add liquidity ----------------");
     {
-            //dai, wFTM - pip add liquidity
+        //dai, wFTM - ohm add liquidity
         {
-            
-            tx = await pip.approve(exchangeRouter.address,ethers.utils.parseUnits("100000000",9),{nonce : nonce++, gasLimit : "100000", gasPrice : "200000000000"});
-            
-            tx = await dai.approve(exchangeRouter.address,ethers.utils.parseUnits("1000000",18),{nonce : nonce++, gasLimit : "100000", gasPrice : "200000000000"});
-            
-            tx = await wFTM.approve(exchangeRouter.address,ethers.utils.parseUnits("1000000",18),{nonce : nonce++, gasLimit : "100000", gasPrice : "200000000000"});
-            
-            console.log(ethers.utils.formatUnits(await pip.allowance(deployer.address, exchangeRouter.address),9));
-            console.log(ethers.utils.formatUnits(await dai.allowance(deployer.address, exchangeRouter.address),18));
-            console.log(ethers.utils.formatUnits(await wFTM.allowance(deployer.address, exchangeRouter.address),18));
+
+            tx = await ohm.approve(exchangeRouter.address, ethers.utils.parseUnits("100000000", 9), { nonce: nonce++, gasLimit: "100000", gasPrice: "200000000000" });
+
+            tx = await dai.approve(exchangeRouter.address, ethers.utils.parseUnits("1000000", 18), { nonce: nonce++, gasLimit: "100000", gasPrice: "200000000000" });
+
+            console.log(ethers.utils.formatUnits(await ohm.allowance(deployer.address, exchangeRouter.address), 9));
+            console.log(ethers.utils.formatUnits(await dai.allowance(deployer.address, exchangeRouter.address), 18));
 
             try {
                 //DAI
                 var tx = await exchangeRouter.addLiquidity(
-                    pip.address,
+                    ohm.address,
                     dai.address,
-                    ethers.utils.parseUnits("6",9),
-                    ethers.utils.parseUnits("10",18),
+                    ethers.utils.parseUnits("10", 9),
+                    ethers.utils.parseUnits("10", 18),
                     0,
                     0,
                     deployer.address,
                     "111111111111111111111",
-                    {nonce : nonce++, gasLimit : "500000", gasPrice : "200000000000"}
+                    { nonce: nonce++, gasLimit: "500000", gasPrice: "200000000000" }
                 );
-            }catch(err){
-                console.log("err",err)
+            } catch (err) {
+                console.log("err", err)
             }
-
-            //wFTM
-            var tx = await exchangeRouter.addLiquidity(
-                pip.address,
-                wFTM.address,
-                ethers.utils.parseUnits("2",9),
-                ethers.utils.parseUnits("10",18),
-                0,
-                0,
-                deployer.address,
-                "111111111111111111111"
-                ,{nonce : nonce++, gasLimit : "500000", gasPrice : "200000000000"}
-            );
-            await tx.wait();
         }
-
-
-        console.log( "PIP: " + pip.address );
-        console.log( "DAI: " + dai.address );
-        console.log( "Frax: " + wFTM.address );
+        console.log("OHM: " + ohm.address);
+        console.log("DAI: " + dai.address);
     }
     var end = new Date().getTime();
 
-    console.log("deploy ended ",(Number(end) - startTIme) /1000)
 
-    // var daiLP = await exchangeFactory.getPair(pip.address,dai.address);
-    // var wFTMLP = await exchangeFactory.getPair(pip.address,dai.address);
+    console.log("LP debtRatio", ethers.utils.formatUnits(await daiLpBond.debtRatio()));
+    console.log("LP bondPriceInUSD", ethers.utils.formatUnits(await daiLpBond.bondPriceInUSD()));
 
-    console.log( "DAI_ADDRESS: ",dai.address);
-    console.log( "PIP_ADDRESS: ",pip.address);
-    console.log( "STAKING_ADDRESS: ",staking.address);
-    console.log( "STAKING_HELPER_ADDRESS: ",stakingHelper.address);
-    console.log( "SPIP_ADDRESS: ",sPIP.address);
-    console.log( "DISTRIBUTOR_ADDRESS: ",distributor.address);
-    console.log( "BONDINGCALC_ADDRESS: ",olympusBondingCalculator.address);
-    console.log( "TREASURY_ADDRESS: ",treasury.address);
+    console.log("deploy ended ", (Number(end) - startTIme) / 1000)
 
-    
-    console.log( "bondAddress: ",daiBond.address);
-    console.log( "daiLP: ",daiLP);
-    console.log( "bondAddress: ",wFTMBond.address);
-    console.log( "wFTMLP: ",wFTMLP);
+    // var daiLP = await exchangeFactory.getPair(ohm.address,dai.address);
+    // var wFTMLP = await exchangeFactory.getPair(ohm.address,dai.address);
+
+    console.log("DAI_ADDRESS: ", dai.address);
+    console.log("OHM_ADDRESS: ", ohm.address);
+    console.log("STAKING_ADDRESS: ", staking.address);
+    console.log("STAKING_HELPER_ADDRESS: ", stakingHelper.address);
+    console.log("SOHM_ADDRESS: ", sOHM.address);
+    console.log("DISTRIBUTOR_ADDRESS: ", distributor.address);
+    console.log("BONDINGCALC_ADDRESS: ", olympusBondingCalculator.address);
+    console.log("TREASURY_ADDRESS: ", treasury.address);
+
+    console.log("DAI ---------- ");
+    console.log('bondAddress: "' + daiBond.address + '"');
+    console.log('reserveAddress: "' + dai.address + '"');
+
+    console.log('LP ---------- "');
+    console.log('bondAddress: "' + daiLpBond.address + '"');
+    console.log('reserveAddress: "' + daiLP + '"');
 }
 
 main()
@@ -368,4 +342,4 @@ main()
     .catch(error => {
         console.error(error);
         process.exit(1);
-})
+    })

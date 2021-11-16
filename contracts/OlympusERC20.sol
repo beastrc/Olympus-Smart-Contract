@@ -873,7 +873,7 @@ contract OlympusERC20Token is ERC20Permit, VaultOwned {
 
     using SafeMath for uint256;
 
-    constructor() ERC20("PIP", "PIP", 9) {}
+    constructor() ERC20("OHM", "OHM", 9) {}
 
     function mint(address account_, uint256 amount_) external onlyVault() {
         _mint(account_, amount_);

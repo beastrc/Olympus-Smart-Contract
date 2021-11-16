@@ -44,10 +44,10 @@ async function main() {
 		console.log("exchangeRouter",exchangeRouter.address.yellow)
     }
 
-    // Deploy PIP
-    const PIP = await ethers.getContractFactory('OlympusERC20Token');
-    const pip = await PIP.deploy();
-    await pip.deployed();
+    // Deploy OHM
+    const OHM = await ethers.getContractFactory('OlympusERC20Token');
+    const ohm = await OHM.deploy();
+    await ohm.deployed();
 
     // Deploy DAI
     const DAI = await ethers.getContractFactory('DAI');
@@ -64,11 +64,11 @@ async function main() {
     await frax.mint( deployer.address, initialMint );
 
     
-    console.log(" pip.balanceOf",String(await pip.balanceOf(deployer.address)) )
+    console.log(" ohm.balanceOf",String(await ohm.balanceOf(deployer.address)) )
     console.log(" dai.balanceOf",String(await dai.balanceOf(deployer.address)) )
     console.log(" frax.balanceOf",String(await frax.balanceOf(deployer.address)) )
 
-    console.log( "PIP: " + pip.address );
+    console.log( "OHM: " + ohm.address );
     console.log( "DAI: " + dai.address );
     console.log( "Frax: " + frax.address );
     console.log( "Router: " + exchangeRouter.address );

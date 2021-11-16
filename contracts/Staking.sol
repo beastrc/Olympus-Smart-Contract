@@ -515,8 +515,8 @@ contract Ownable is IOwnable {
     }
 }
 
-interface IsPIP {
-    function rebase( uint256 pipProfit_, uint epoch_) external returns (uint256);
+interface IsOHM {
+    function rebase( uint256 ohmProfit_, uint epoch_) external returns (uint256);
 
     function circulatingSupply() external view returns (uint256);
 
@@ -542,8 +542,8 @@ contract OlympusStaking is Ownable {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
 
-    address public immutable PIP;
-    address public immutable sPIP;
+    address public immutable OHM;
+    address public immutable sOHM;
 
     struct Epoch {
         uint length;
@@ -562,16 +562,16 @@ contract OlympusStaking is Ownable {
     uint public warmupPeriod;
     
     constructor ( 
-        address _PIP, 
-        address _sPIP, 
+        address _OHM, 
+        address _sOHM, 
         uint _epochLength,
         uint _firstEpochNumber,
         uint _firstEpochBlock
     ) {
-        require( _PIP != address(0) );
-        PIP = _PIP;
-        require( _sPIP != address(0) );
-        sPIP = _sPIP;
+        require( _OHM != address(0) );
+        OHM = _OHM;
+        require( _sOHM != address(0) );
+        sOHM = _sOHM;
         
         epoch = Epoch({
             length: _epochLength,
@@ -590,50 +590,50 @@ contract OlympusStaking is Ownable {
     mapping( address => Claim ) public warmupInfo;
 
     /**
-        @notice stake PIP to enter warmup
+        @notice stake OHM to enter warmup
         @param _amount uint
         @return bool
      */
     function stake( uint _amount, address _recipient ) external returns ( bool ) {
         rebase();
         
-        IERC20( PIP ).safeTransferFrom( msg.sender, address(this), _amount );
+        IERC20( OHM ).safeTransferFrom( msg.sender, address(this), _amount );
 
         Claim memory info = warmupInfo[ _recipient ];
         require( !info.lock, "Deposits for account are locked" );
 
         warmupInfo[ _recipient ] = Claim ({
             deposit: info.deposit.add( _amount ),
-            gons: info.gons.add( IsPIP( sPIP ).gonsForBalance( _amount ) ),
+            gons: info.gons.add( IsOHM( sOHM ).gonsForBalance( _amount ) ),
             expiry: epoch.number.add( warmupPeriod ),
             lock: false
         });
         
-        IERC20( sPIP ).safeTransfer( warmupContract, _amount );
+        IERC20( sOHM ).safeTransfer( warmupContract, _amount );
         return true;
     }
 
     /**
-        @notice retrieve sPIP from warmup
+        @notice retrieve sOHM from warmup
         @param _recipient address
      */
     function claim ( address _recipient ) public {
         Claim memory info = warmupInfo[ _recipient ];
         if ( epoch.number >= info.expiry && info.expiry != 0 ) {
             delete warmupInfo[ _recipient ];
-            IWarmup( warmupContract ).retrieve( _recipient, IsPIP( sPIP ).balanceForGons( info.gons ) );
+            IWarmup( warmupContract ).retrieve( _recipient, IsOHM( sOHM ).balanceForGons( info.gons ) );
         }
     }
 
     /**
-        @notice forfeit sPIP in warmup and retrieve PIP
+        @notice forfeit sOHM in warmup and retrieve OHM
      */
     function forfeit() external {
         Claim memory info = warmupInfo[ msg.sender ];
         delete warmupInfo[ msg.sender ];
 
-        IWarmup( warmupContract ).retrieve( address(this), IsPIP( sPIP ).balanceForGons( info.gons ) );
-        IERC20( PIP ).safeTransfer( msg.sender, info.deposit );
+        IWarmup( warmupContract ).retrieve( address(this), IsOHM( sOHM ).balanceForGons( info.gons ) );
+        IERC20( OHM ).safeTransfer( msg.sender, info.deposit );
     }
 
     /**
@@ -644,7 +644,7 @@ contract OlympusStaking is Ownable {
     }
 
     /**
-        @notice redeem sPIP for PIP
+        @notice redeem sOHM for OHM
         @param _amount uint
         @param _trigger bool
      */
@@ -652,16 +652,16 @@ contract OlympusStaking is Ownable {
         if ( _trigger ) {
             rebase();
         }
-        IERC20( sPIP ).safeTransferFrom( msg.sender, address(this), _amount );
-        IERC20( PIP ).safeTransfer( msg.sender, _amount );
+        IERC20( sOHM ).safeTransferFrom( msg.sender, address(this), _amount );
+        IERC20( OHM ).safeTransfer( msg.sender, _amount );
     }
 
     /**
-        @notice returns the sPIP index, which tracks rebase growth
+        @notice returns the sOHM index, which tracks rebase growth
         @return uint
      */
     function index() public view returns ( uint ) {
-        return IsPIP( sPIP ).index();
+        return IsOHM( sOHM ).index();
     }
 
     /**
@@ -670,7 +670,7 @@ contract OlympusStaking is Ownable {
     function rebase() public {
         if( epoch.endBlock <= block.number ) {
 
-            IsPIP( sPIP ).rebase( epoch.distribute, epoch.number );
+            IsOHM( sOHM ).rebase( epoch.distribute, epoch.number );
 
             epoch.endBlock = epoch.endBlock.add( epoch.length );
             epoch.number++;
@@ -680,7 +680,7 @@ contract OlympusStaking is Ownable {
             }
 
             uint balance = contractBalance();
-            uint staked = IsPIP( sPIP ).circulatingSupply();
+            uint staked = IsOHM( sOHM ).circulatingSupply();
 
             if( balance <= staked ) {
                 epoch.distribute = 0;
@@ -691,11 +691,11 @@ contract OlympusStaking is Ownable {
     }
 
     /**
-        @notice returns contract PIP holdings, including bonuses provided
+        @notice returns contract OHM holdings, including bonuses provided
         @return uint
      */
     function contractBalance() public view returns ( uint ) {
-        return IERC20( PIP ).balanceOf( address(this) ).add( totalBonus );
+        return IERC20( OHM ).balanceOf( address(this) ).add( totalBonus );
     }
 
     /**
@@ -705,7 +705,7 @@ contract OlympusStaking is Ownable {
     function giveLockBonus( uint _amount ) external {
         require( msg.sender == locker );
         totalBonus = totalBonus.add( _amount );
-        IERC20( sPIP ).safeTransfer( locker, _amount );
+        IERC20( sOHM ).safeTransfer( locker, _amount );
     }
 
     /**
@@ -715,7 +715,7 @@ contract OlympusStaking is Ownable {
     function returnLockBonus( uint _amount ) external {
         require( msg.sender == locker );
         totalBonus = totalBonus.sub( _amount );
-        IERC20( sPIP ).safeTransferFrom( locker, address(this), _amount );
+        IERC20( sOHM ).safeTransferFrom( locker, address(this), _amount );
     }
 
     enum CONTRACTS { DISTRIBUTOR, WARMUP, LOCKER }

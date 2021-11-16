@@ -745,97 +745,97 @@ interface IStaking {
     function index() external view returns ( uint );
 }
 
-contract wPIP is ERC20 {
+contract wOHM is ERC20 {
     using SafeERC20 for ERC20;
     using Address for address;
     using SafeMath for uint;
 
     address public immutable staking;
-    address public immutable PIP;
-    address public immutable sPIP;
+    address public immutable OHM;
+    address public immutable sOHM;
 
-    constructor( address _staking, address _PIP, address _sPIP ) ERC20( 'Wrapped sPIP', 'wsPIP' ) {
+    constructor( address _staking, address _OHM, address _sOHM ) ERC20( 'Wrapped sOHM', 'wsOHM' ) {
         require( _staking != address(0) );
         staking = _staking;
-        require( _PIP != address(0) );
-        PIP = _PIP;
-        require( _sPIP != address(0) );
-        sPIP = _sPIP;
+        require( _OHM != address(0) );
+        OHM = _OHM;
+        require( _sOHM != address(0) );
+        sOHM = _sOHM;
     }
 
         /**
-        @notice stakes PIP and wraps sPIP
+        @notice stakes OHM and wraps sOHM
         @param _amount uint
         @return uint
      */
-    function wrapFromPIP( uint _amount ) external returns ( uint ) {
-        IERC20( PIP ).transferFrom( msg.sender, address(this), _amount );
+    function wrapFromOHM( uint _amount ) external returns ( uint ) {
+        IERC20( OHM ).transferFrom( msg.sender, address(this), _amount );
 
-        IERC20( PIP ).approve( staking, _amount ); // stake PIP for sPIP
+        IERC20( OHM ).approve( staking, _amount ); // stake OHM for sOHM
         IStaking( staking ).stake( _amount, address(this) );
 
-        uint value = wPIPValue( _amount );
+        uint value = wOHMValue( _amount );
         _mint( msg.sender, value );
         return value;
     }
 
     /**
-        @notice unwrap sPIP and unstake PIP
+        @notice unwrap sOHM and unstake OHM
         @param _amount uint
         @return uint
      */
-    function unwrapToPIP( uint _amount ) external returns ( uint ) {
+    function unwrapToOHM( uint _amount ) external returns ( uint ) {
         _burn( msg.sender, _amount );
         
-        uint value = sPIPValue( _amount );
-        IERC20( sPIP ).approve( staking, value ); // unstake sPIP for PIP
+        uint value = sOHMValue( _amount );
+        IERC20( sOHM ).approve( staking, value ); // unstake sOHM for OHM
         IStaking( staking ).unstake( value, address(this) );
 
-        IERC20( PIP ).transfer( msg.sender, value );
+        IERC20( OHM ).transfer( msg.sender, value );
         return value;
     }
 
     /**
-        @notice wrap sPIP
+        @notice wrap sOHM
         @param _amount uint
         @return uint
      */
-    function wrapFromsPIP( uint _amount ) external returns ( uint ) {
-        IERC20( sPIP ).transferFrom( msg.sender, address(this), _amount );
+    function wrapFromsOHM( uint _amount ) external returns ( uint ) {
+        IERC20( sOHM ).transferFrom( msg.sender, address(this), _amount );
         
-        uint value = wPIPValue( _amount );
+        uint value = wOHMValue( _amount );
         _mint( msg.sender, value );
         return value;
     }
 
     /**
-        @notice unwrap sPIP
+        @notice unwrap sOHM
         @param _amount uint
         @return uint
      */
-    function unwrapTosPIP( uint _amount ) external returns ( uint ) {
+    function unwrapTosOHM( uint _amount ) external returns ( uint ) {
         _burn( msg.sender, _amount );
 
-        uint value = sPIPValue( _amount );
-        IERC20( sPIP ).transfer( msg.sender, value );
+        uint value = sOHMValue( _amount );
+        IERC20( sOHM ).transfer( msg.sender, value );
         return value;
     }
 
     /**
-        @notice converts wPIP amount to sPIP
+        @notice converts wOHM amount to sOHM
         @param _amount uint
         @return uint
      */
-    function sPIPValue( uint _amount ) public view returns ( uint ) {
+    function sOHMValue( uint _amount ) public view returns ( uint ) {
         return _amount.mul( IStaking( staking ).index() ).div( 10 ** decimals() );
     }
 
     /**
-        @notice converts sPIP amount to wPIP
+        @notice converts sOHM amount to wOHM
         @param _amount uint
         @return uint
      */
-    function wPIPValue( uint _amount ) public view returns ( uint ) {
+    function wOHMValue( uint _amount ) public view returns ( uint ) {
         return _amount.mul( 10 ** decimals() ).div( IStaking( staking ).index() );
     }
 

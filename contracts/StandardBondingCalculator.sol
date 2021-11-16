@@ -265,11 +265,11 @@ contract OlympusBondingCalculator is IBondingCalculator {
     using SafeMath for uint;
     using SafeMath for uint112;
 
-    address public immutable PIP;
+    address public immutable OHM;
 
-    constructor( address _PIP ) {
-        require( _PIP != address(0) );
-        PIP = _PIP;
+    constructor( address _OHM ) {
+        require( _OHM != address(0) );
+        OHM = _OHM;
     }
 
     function getKValue( address _pair ) public view returns( uint k_ ) {
@@ -296,11 +296,11 @@ contract OlympusBondingCalculator is IBondingCalculator {
         ( uint reserve0, uint reserve1, ) = IUniswapV2Pair( _pair ).getReserves();
 
         uint reserve;
-        if ( IUniswapV2Pair( _pair ).token0() == PIP ) {
+        if ( IUniswapV2Pair( _pair ).token0() == OHM ) {
             reserve = reserve1;
         } else {
             reserve = reserve0;
         }
-        return reserve.mul( 2 * ( 10 ** IERC20( PIP ).decimals() ) ).div( getTotalValue( _pair ) );
+        return reserve.mul( 2 * ( 10 ** IERC20( OHM ).decimals() ) ).div( getTotalValue( _pair ) );
     }
 }
